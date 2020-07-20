@@ -1,2 +1,2 @@
 # specifications
-Issues in this repository are used to track specifications and best practices.
+[Issues in this repository](https://github.com/Permissionless-Software-Foundation/specifications/issues) are used to track specifications and best practices.
