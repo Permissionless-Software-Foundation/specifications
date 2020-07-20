@@ -1,9 +1,9 @@
 # Media Sharing Protocol Specification
 ## Permissionless Software Foundation Specification 001 (PS001)
 
-### Specification version: 1.0.1
+### Specification version: 1.0.2
 ### Date originally published: May 30, 2020
-### Date last updated: June 04, 2020
+### Date last updated: July 20, 2020
 
 ## Authors
 Chris Troutner
@@ -61,6 +61,13 @@ In email, recipients must provide the sender with their public key. The sender t
 Any time a Bitcoin Cash address **sends** money, their public key is recorded on the blockchain. This is a core, primitive part of the Bitcoin protocol. This key can be retrieved by the sender *without any need for communication with the recipient*. This eliminates the source of friction experienced in the email use-case.
 
 However, unless the recipient has initiated **at least one transaction**, their public key will not exist on the blockchain and it can not be retrieved. This is an important initialization step that wallets implementing this specification need to be aware of.
+
+## 4. Implementation
+There have been multiple implementations of this specification as this idea has evolved over time. The list below are presented in reverse-chronological order, so newest first.
+
+- [encrypt-msg](https://github.com/Permissionless-Software-Foundation/encrypt-msg) is a command line application that implements the full specification in this document.
+- [memo-push](https://github.com/christroutner/memo-push) is another command line application that can write IPFS hashes to the BCH blockchain.
+- [Uncensorable Publishing](https://uncensorablepublishing.com/) was an early implementation of this specification for publishing websites. It leverages IPFS and the memo-push command line app.
 
 ## Appendix 1
 ### Message Encryption and Delivery Workflow
