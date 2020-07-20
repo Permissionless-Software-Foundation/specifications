@@ -1,4 +1,5 @@
 # Media Sharing Protocol Specification
+## Permissionless Software Foundation Specification 001 (PS001)
 
 ### Specification version: 1.0.1
 ### Date originally published: May 30, 2020

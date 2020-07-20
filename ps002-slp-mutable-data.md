@@ -1,0 +1,35 @@
+# SLP Token Mutable Data
+## Permissionless Software Foundation Specification 002 (PS002)
+
+### Specification version: 1.0.0
+### Date originally published: July 20, 2020
+### Date last updated: July 20, 2020
+
+## Authors
+Chris Troutner
+
+## Acknowledgements
+- James Cramer created the [Bitcoin Files Specification](https://github.com/simpleledger/slp-specifications/blob/master/bitcoinfiles.md) leveraged by this document.
+- This document builds on top of the [SLP Token Type 1 Protocol](https://github.com/simpleledger/slp-specifications/blob/master/slp-token-type-1.md).
+- This document builds on top of the [PS001 Media Sharing Protocol](./ps001-media-sharing.md)
+
+## 1. Introduction
+The Simple Ledger Protocol (SLP) for tokens includes a `document hash` field in the [specification for the Genesis transaction](https://github.com/simpleledger/slp-specifications/blob/master/slp-token-type-1.md#genesis---token-genesis-transaction). This field is intended to hold a TXID for a Bitcoin Cash transaction. This TXID was originally intended to point to an on-chain file uploaded with the [Bitcoin Files Specification](https://github.com/simpleledger/slp-specifications/blob/master/bitcoinfiles.md).
+
+This document specifies how to leverage the `document hash` field when creating an SLP token to point to mutable data (data that can change over time). This provides many new use cases, such security tokens, tracking state of a tokenized asset (like a video game character), and many others. This specification is a general approach for wallets to discover additional mutable data associated with the token.
+
+## 2. Protocol Overview
+
+There are four parts to *encoding a pointer* to mutable data and attaching it to the Genesis transaction for creating a new SLP token:
+
+1. Create a [MSP bitcoincash address](./ps001-media-sharing.md).
+2. Insert the address into JSON file
+3. Upload JSON file to the chain using Bitcoin Files Protocol
+4. Include TXID in document hash when creating a token.
+
+Likewise, there are four steps to unwind the process when wallet software wants to download the data:
+
+1. Look up the document hash in the token's Genesis transaction.
+2. Retrieve the BFP file from the blockchain.
+3. Open the JSON document and retrieve the MSP bitcoin cash address.
+4. Download the data pointed to by the MSP address.
