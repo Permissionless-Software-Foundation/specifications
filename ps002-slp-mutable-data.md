@@ -53,3 +53,6 @@ The JSON file can then be uploaded to the Bitcoin Cash blockchain using the [Bit
 
 ### 3.4 Use TXID in Document Hash Field
 The final step is to create a new SLP token. This could be of Token Type 1, or an NFT. Any SLP token has a `document hash` field in the Genesis transaction. The TXID output from the BFP file upload can be inserted into this field.
+
+### 4. Reading Mutible Data
+Additional details will be provided.
