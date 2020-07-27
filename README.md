@@ -5,4 +5,4 @@ This repository is used to track PSF Specification documents. These are specific
 
 - [PS002 - SLP Mutable Data](./ps002-slp-mutable-data.md) - How to leverage the `document hash` field when creating an SLP token to point to mutable data (data that can change over time).
 
-- [PS003 - SLP JSON ID](./ps003-slp-json-id.md) - Inspired by the [Lokad ID](https://github.com/bitcoincashorg/bitcoincash.org/blob/master/spec/op_return-prefix-guideline.md), anyone can submit a PR to claim their `slpjsonid`. Wallets can download the [slpjsonid.csv file](./slpjsonid.csv) to decipher the JSON data uploaded via PS002.
+- [PS003 - SLP JSON ID](./ps003-slp-json-id.md) - Inspired by the [Lokad ID](https://github.com/bitcoincashorg/bitcoincash.org/blob/master/spec/op_return-prefix-guideline.md), anyone can submit a PR to claim their `slpjsonid`. Wallets can download the [slpjsonid.csv file](./slpjsonid.csv) to decipher the JSON data uploaded via [PS002](./ps002-slp-mutable-data.md).
