@@ -9,16 +9,16 @@
 Chris Troutner
 
 ## 1. Introduction
-[CashShuffle](https://cashshuffle.com/) and [CashFusion](https://cashfusion.org/) are popular [CoinJoin](https://en.bitcoin.it/wiki/CoinJoin) protocols on the Bitcoin Cash network. But they are complex and as a result have only been implemented in a single wallet ([Electron Cash](https://electroncash.org/)). A more general-purpose approach to generating CoinJoin transactions and coordinating wallets is desirable in order to allow wild innovation and integration into many wallets. This document describes the orchestration of a handful of JavaScript npm libraries that can be used to create a that general-purpose approach.
+[CashShuffle](https://cashshuffle.com/) and [CashFusion](https://cashfusion.org/) are popular [CoinJoin](https://en.bitcoin.it/wiki/CoinJoin) protocols on the Bitcoin Cash network. But they are complex and as a result have only been implemented in a single wallet ([Electron Cash](https://electroncash.org/)). A more general-purpose approach to generating CoinJoin transactions and coordinating wallets is desirable in order to allow wild innovation and integration into many wallets. This document describes the orchestration of a handful of JavaScript npm libraries that can be used to create that general-purpose approach.
 
 ## 2. Component Parts
 On the surface, a CoinJoin transaction is not a difficult or unusual type of Bitcoin transaction. The hard part is the coordination and communication of wallets, as several wallets need to coordinate synchronously in order to generate and broadcast a CoinJoin transaction.
 
 The Collaborative CoinJoin protocol specified in this document is based on [this CoinJoin example](https://github.com/Permissionless-Software-Foundation/bch-js-examples/tree/master/applications/collaborate/coinjoin). However, examples of how to generate a collaborative CoinJoin transaction is only one piece of the solution. A way to securely communicate and a protocol for coordination is also required.
 
-For secure communication, the [bch-encrypt-lib](https://github.com/Permissionless-Software-Foundation/bch-encrypt-lib) can be used. This is a JavaScript npm library that contains utility functions for end-to-end (e2e) encryption of messages using the same eliptic curve encryption that Bitcoin is based upon.
+For secure communication, the [bch-encrypt-lib](https://github.com/Permissionless-Software-Foundation/bch-encrypt-lib) can be used. This is a JavaScript npm library that contains utility functions for end-to-end (e2e) encryption of messages using the same elliptic curve encryption that Bitcoin is based upon.
 
-For coordination the [IPFS](https://ipfs.io) network will be used, specifically the pubsub features that allow IPFS nodes to subscribe to channels and receive published messages. The [merit-chat](https://github.com/christroutner/merit-chat) repository contains a rough prototype of how BCH wallets can publish and subscribe to these communication channels. This provides the foundation for the coordination and communication requires to organize CoinJoin transactions between wallets.
+For coordination the [IPFS](https://ipfs.io) network will be used, specifically the pubsub features that allow IPFS nodes to subscribe to channels and receive published messages. The [merit-chat](https://github.com/christroutner/merit-chat) repository contains a rough prototype of how BCH wallets can publish and subscribe to these communication channels. This provides the foundation for the coordination and communication required to organize CoinJoin transactions between wallets.
 
 ## 3. Base Coordination
 To bootstrap coordination between peers (wallets), a base pubsub channel needs to be established. The [PS001 Media Sharing protocol](https://github.com/Permissionless-Software-Foundation/specifications/blob/master/ps001-media-sharing.md) or more basic [Memo.cash protocol](https://github.com/Permissionless-Software-Foundation/specifications/blob/master/ps001-media-sharing.md) provides an excellent medium to establish this base pubsub channel.
@@ -31,21 +31,22 @@ Once a wallet has subscribed to the IPFS pubsub channel for base coordination, t
 It's important to choose a time period that is not too soon (spammy), but not too long (bad UX). A period of two (2) minutes is widely acceptible as a good time frame.
 
 When broadcasting connection information, it's important that each wallet broadcast enough information to allow other wallets to communicate with them using e2e encryption, but not enough information is broadcast to compromise security. Here is a list of recommended data to include in the broadcast:
-- A scheme version
+- A schema version
 - A message type or description indicating this is an 'announcement' of existance.
-- The IPFS connection ID for the wallet.
+- The IPFS peer ID for the wallet.
+- A list of IPFS multiaddresses for connection directly between nodes.
 - The Bitcoin Cash address for the wallet, used for e2e encrypted message passing.
-- The SLP address for the wallet, used if any token staking or token-related information is needed.
-- The public key used to generate the BCH and SLP addresses. This public key will be used to encrypt messages for this wallet.
+- The SLP address generated from the above BCH address, used if any token staking or token-related information is needed.
+- The public key used to generate the BCH and SLP addresses above. This public key will be used to encrypt messages for this wallet.
 
 When announcing itself on the base coordination pubsub channel, the wallet should also create its own pubsub channel using its `bitcoincash:` address as the pubsub channel string. Other wallets can communicate with this wallet by sending encrypted messages to its pubsub channel. If a message is sent to this channel that is not e2e encrypted, the message should be rejected.
 
 ## 5. Soliciting for CoinJoin Participation
-Wallets become aware of other wallets by monitoring the base coordination pubsub channel. When a new wallet announces itself, a wallet should record the announcement information. It should periodically poll the wallets that it's aware of for requests to join a CoinJoin transaction.
+Wallets become aware of other wallets by monitoring the base coordination pubsub channel. When a new wallet announces itself, a wallet should record the announcement information. It should periodically poll the wallets that it's aware of with requests to join a CoinJoin transaction.
 
 The wallet can poll other wallets by sending a encrypted petition to each wallet using their `bitcoincash:` pubsub channel. The wallet should specify the following information in this petition:
 - Minimum number of participants acceptable for a CoinJoin transaction.
-- Maximum amount of BCH for a CoinJoin transaction.
+- Maximum amount of BCH output in a CoinJoin transaction.
 
 Wallets can track the above requirements between other peer wallets. When the requirements are met, the wallets can then coordinate to generate a CoinJoin transaction.
 
