@@ -43,10 +43,10 @@ When announcing itself on the base coordination pubsub channel, the wallet shoul
 
 **Security Best Practices**
 
-If a message is sent to this channel that is not e2e encrypted, the message should be rejected. It is also recommended that wallets change their IPFS and BCH information after each successful CoinJoin transaction.
+If a message is sent to a nodes private channel that is not e2e encrypted, the message should be rejected. It is also recommended that wallets change their IPFS and BCH information after each successful CoinJoin transaction.
 
 ## 5. Soliciting for CoinJoin Participation
-Wallets become aware of other wallets by monitoring the base coordination pubsub channel. When a new wallet announces itself, a wallet should record the announcement information. It should periodically poll the wallets that it's aware of with requests to join a CoinJoin transaction.
+Wallets become aware of other wallets by monitoring the base coordination pubsub channel. When a new wallet announces itself, a wallet should record the announcement information. It should periodically poll the wallets that it's aware of with a request to join a CoinJoin transaction.
 
 The wallet can poll other wallets by sending a encrypted petition to each wallet using their `bitcoincash:` pubsub channel. The wallet should specify the following information in this petition:
 - Minimum number of participants acceptable for a CoinJoin transaction.
@@ -90,4 +90,4 @@ Wallets can track the above requirements between other peer wallets. When the re
 - At any time, a wallet can cancel the transaction by sending a Cancelation message containing the UUID for Organization message.
 
 ### 6.4 Corner Cases
-- If a wallet recieves an Organization message before it recieves a response from all participants, it should send out a Cenceling message to all participants and then respond to the Organization message. This ensure that all participants default into collaborative behavior instead of selfish behavior.
+- If a wallet receives a new *Organization* message before it receives a response from all participants, it should send out a *Canceling* message to all participants and then respond to the *Organization* message. This ensure that all participants default into collaborative behavior instead of selfish behavior.
