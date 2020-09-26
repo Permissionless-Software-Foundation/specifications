@@ -3,7 +3,7 @@
 
 ### Specification version: 1.0.0
 ### Date originally published: September 22, 2020
-### Date last updated: September 22, 2020
+### Date last updated: September 26, 2020
 
 ## Authors
 Chris Troutner
@@ -50,5 +50,40 @@ The wallet can poll other wallets by sending a encrypted petition to each wallet
 
 Wallets can track the above requirements between other peer wallets. When the requirements are met, the wallets can then coordinate to generate a CoinJoin transaction.
 
-## 6. Initiating a CoinJoin Transaction
-...more details to follow
+- Each wallet updates an array of petitions as the data comes in, with the newly updated information. Old data is replaced by new data.
+- After each petition is received and the state updated, the state is checked for:
+  - more than the minimum participants
+  - With at least one peer with a maximum amount equal to or less than the wallets maximum
+
+## 6. Coordination Protocol
+- If the two requirements above are met, the wallet compiles an object containing:
+  - The participants it wants
+  - The maximum output of the CoinJoin (based on the smallest maximum of the peers)
+  - a UUID for the organization message
+
+- The object is broadcast to the selected participants, e2e encrypted, on their private pubsub channels.
+
+- The wallet will wait approximately 2 minutes for all the wallets to respond. Communication will go through a series of phases until a successful CoinJoin transaction is built and broadcasted.
+
+### 6.1 TX Building
+- The wallet will wait until all particpants have acknowledged and agreed to the transactions.
+  - The acknowledgement message must include:
+	- The UTXO inputs they want to add to the transaction.
+	- The outputs they want to add to the transaction.
+
+- The wallet will compile an unsigned transaction from the ack messages. It will then broadcast the unsigned tx to the participants.
+
+- Each participant will check their part of the transaction. If acceptible, they will sign and send back the partially-signed transaction.
+
+- The wallet will wait approximately 2 minutes for all the wallets to respond.
+
+### 6.2 Broadcasting
+- Once all participants have responded with their partially signed transaction, the wallet will combine them into a single fully-signed tx and will broadcast it to the network.
+
+- The wallet will send each participant a 'done' message, containing the txid of the transaction.
+
+### 6.3 Canceling
+- At any time, a wallet can cancel the transaction by sending a Cancelation message containing the UUID for Organization message.
+
+### 6.4 Corner Cases
+- If a wallet recieves an Organization message before it recieves a response from all participants, it should send out a Cenceling message to all participants and then respond to the Organization message. This ensure that all participants default into collaborative behavior instead of selfish behavior.
