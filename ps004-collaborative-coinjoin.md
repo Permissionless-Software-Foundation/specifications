@@ -84,10 +84,14 @@ Wallets can track the above requirements between other peer wallets. When the re
 ### 6.2 Broadcasting
 - Once all participants have responded with their partially signed transaction, the wallet will combine them into a single fully-signed tx and will broadcast it to the network.
 
-- The wallet will send each participant a 'done' message, containing the txid of the transaction.
+### 6.3 Done
+- The wallet will send each participant a *Done* message, containing the txid of the transaction.
 
-### 6.3 Canceling
+### 6.4 Canceling
 - At any time, a wallet can cancel the transaction by sending a Cancelation message containing the UUID for Organization message.
 
-### 6.4 Corner Cases
+### 6.5 Corner Cases
 - If a wallet receives a new *Organization* message before it receives a response from all participants, it should send out a *Canceling* message to all participants and then respond to the *Organization* message. This ensure that all participants default into collaborative behavior instead of selfish behavior.
+
+## 7 Cleanup
+After receiving a *Done* message, all participants should change their IPFS and BCH connection information. This ensures that malicious participants can not track and associate transactions with nodes beyond the single transaction.
