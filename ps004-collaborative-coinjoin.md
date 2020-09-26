@@ -14,7 +14,7 @@ Chris Troutner
 ## 2. Component Parts
 On the surface, a CoinJoin transaction is not a difficult or unusual type of Bitcoin transaction. The hard part is the coordination and communication of wallets, as several wallets need to coordinate synchronously in order to generate and broadcast a CoinJoin transaction.
 
-The Collaborative CoinJoin protocol specified in this document is based on [this CoinJoin example](https://github.com/Permissionless-Software-Foundation/bch-js-examples/tree/master/applications/collaborate/coinjoin). However, examples of how to generate a collaborative CoinJoin transaction is only one piece of the solution. A way to securely communicate and a protocol for coordination is also required.
+The Collaborative CoinJoin protocol specified in this document is based on [this CoinJoin example](https://github.com/Permissionless-Software-Foundation/bch-js-examples/tree/master/applications/collaborate/coinjoin). However, examples of how to generate a collaborative CoinJoin transaction is only one piece of the solution. A way to securely communicate, and a protocol for coordination, is also required.
 
 For secure communication, the [bch-encrypt-lib](https://github.com/Permissionless-Software-Foundation/bch-encrypt-lib) can be used. This is a JavaScript npm library that contains utility functions for end-to-end (e2e) encryption of messages using the same elliptic curve encryption that Bitcoin is based upon.
 
@@ -39,7 +39,10 @@ When broadcasting connection information, it's important that each wallet broadc
 - The SLP address generated from the above BCH address, used if any token staking or token-related information is needed.
 - The public key used to generate the BCH and SLP addresses above. This public key will be used to encrypt messages for this wallet.
 
-When announcing itself on the base coordination pubsub channel, the wallet should also create its own pubsub channel using its `bitcoincash:` address as the pubsub channel string. Other wallets can communicate with this wallet by sending encrypted messages to its pubsub channel. If a message is sent to this channel that is not e2e encrypted, the message should be rejected.
+When announcing itself on the base coordination pubsub channel, the wallet should also create its own pubsub channel using its `bitcoincash:` address as the pubsub channel string. Other wallets can communicate with this wallet by sending encrypted messages to its pubsub channel.
+
+**Security Best Practices**
+If a message is sent to this channel that is not e2e encrypted, the message should be rejected. It is also recommended that wallets change their IPFS and BCH information after each successful CoinJoin transaction.
 
 ## 5. Soliciting for CoinJoin Participation
 Wallets become aware of other wallets by monitoring the base coordination pubsub channel. When a new wallet announces itself, a wallet should record the announcement information. It should periodically poll the wallets that it's aware of with requests to join a CoinJoin transaction.
