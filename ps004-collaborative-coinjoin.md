@@ -42,6 +42,7 @@ When broadcasting connection information, it's important that each wallet broadc
 When announcing itself on the base coordination pubsub channel, the wallet should also create its own pubsub channel using its `bitcoincash:` address as the pubsub channel string. Other wallets can communicate with this wallet by sending encrypted messages to its pubsub channel.
 
 **Security Best Practices**
+
 If a message is sent to this channel that is not e2e encrypted, the message should be rejected. It is also recommended that wallets change their IPFS and BCH information after each successful CoinJoin transaction.
 
 ## 5. Soliciting for CoinJoin Participation
