@@ -3,7 +3,7 @@
 
 ### Specification version: 1.0.2
 ### Date originally published: May 30, 2020
-### Date last updated: July 20, 2020
+### Date last updated: November 10, 2020
 
 ## Authors
 Chris Troutner
@@ -22,7 +22,7 @@ For very small content (less than 10kB), on-chain data can be transmitted via th
 This protocol specification describes the requirements for signaling to a Bitcoin Cash address that another address has sent it a message and how to retrieve the message.
 
 ### 2.1 Payload Information
-The OP_RETURN of a Bitcoin Cash transaction is used to point to the message payload, and to indicate if that content is stored on-chain or off-chain. This data extends the [Memo Protocol](https://memo.cash/protocol), by using the `0x6d02` prefix to signal a UTF-8 encoded (aka 'clear text') message using the memo protocol.
+The OP_RETURN of a Bitcoin Cash transaction is used to point to the message payload, and to indicate if that content is stored on-chain or off-chain. This data extends the [Memo Protocol](https://memo.cash/protocol), by using the `0x6dd2` prefix to signal a UTF-8 encoded (aka 'clear text') message using the memo protocol.
 
 The message follows this pattern:
 
@@ -77,3 +77,13 @@ There have been multiple implementations of this specification as this idea has 
 This diagram shows the workflow associated with 'Alice' to send an e2e encrypted message to 'Bob' using the encrypt-msg app. This diagram is covered in detail in [this YouTube video](https://www.youtube.com/watch?v=RB9yt65y9s8).
 
 ![e2e-pt2-flow.png](./images/e2e-pt2-flow.png)
+
+## Appendix 2
+### Extending the Existing Protocols
+
+This specification uses the OP_RETURN prefix `0x6dd2`. This choice is a result of collaboration with the developers behind [memo.cash](https://memo.cash) and [member.cash](https://member.cash), two on-chain social media applications.
+
+The `0x6dd2` prefix was previously unused, and it extends the existing specifcation for each social media platform:
+
+- [memo.cash Protocol Specification](https://memo.cash/protocol)
+- [member.cash Protocol Specification](https://github.com/memberapp/protocol)
