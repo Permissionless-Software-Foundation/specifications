@@ -3,7 +3,7 @@
 
 ### Specification version: 1.0.2
 ### Date originally published: May 30, 2020
-### Date last updated: November 10, 2020
+### Date last updated: December 27, 2020
 
 ## Authors
 Chris Troutner
@@ -49,6 +49,16 @@ An on-chain signal is required to allow wallets to detect that they have a messa
 The on-chain signal to the recipient is a standard dust output (546 satoshis). But it is not required to be dust. It can be any amount of satoshis more than dust.
 
 If a threshold amount of satoshis is set by the end user, this feature can be used as spam prevention. Any messages not meeting the threshold can be ignored by the wallet.
+
+### 2.4 Multiple Parties
+
+Multiple parties can be signaled with a single transaction by appending additional outputs to the transaction. This will ensure the transaction appears in the transaction history of each address involved.
+
+If encrypted, the payload should contain a copy of the same message for each party, encrypted with that parties public key.
+
+This variation captures the following use cases:
+- Sending a message to multiple parties at once.
+- Ensuring the sender of a message can view a 'sent' copy of the e2e encrypted message.
 
 ## 3. Encryption
 
