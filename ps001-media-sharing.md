@@ -60,6 +60,12 @@ Here is an example of a simple message sent with [message.FullStack.cash](https:
 }
 ```
 
+#### 2.2.1 Recommended Payload Properties
+
+The following properties are not required, but are optional and recommended.
+
+- **senderCopy** - contains an encrypted copy of the message, encrypted with the senders public key. This allows Senders to review their own history.
+
 
 ### 2.3 Message Signaling
 
@@ -78,10 +84,6 @@ If a threshold amount of satoshis is set by the end user, this feature can be us
 Multiple parties can be signaled with a single transaction by appending additional outputs to the transaction. This will ensure the transaction appears in the transaction history of each address involved.
 
 If encrypted, the payload should contain a copy of the same message for each party, encrypted with that parties public key.
-
-This variation captures the following use cases:
-- Sending a message to multiple parties at once.
-- Ensuring the sender of a message can view a 'sent' copy of the e2e encrypted message.
 
 ## 3. Encryption
 
