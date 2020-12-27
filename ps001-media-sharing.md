@@ -22,7 +22,7 @@ For very small content (less than 10kB), on-chain data can be transmitted via th
 This protocol specification describes the requirements for signaling to a Bitcoin Cash address that another address has sent it a message and how to retrieve the message.
 
 ### 2.1 Payload Information
-The OP_RETURN of a Bitcoin Cash transaction is used to point to the message payload, and to indicate if that content is stored on-chain or off-chain. This data extends the [Memo Protocol](https://memo.cash/protocol), by using the `0x6dd2` prefix to signal a UTF-8 encoded (aka 'clear text') message using the memo protocol.
+The OP_RETURN of a Bitcoin Cash transaction is used to point to the message payload, and to indicate if that content is stored on-chain or off-chain. This data extends the [Memo Protocol](https://memo.cash/protocol), by using the `0x6dd2` prefix to signal a UTF-8 encoded (aka 'clear text') message using the memo protocol. (See [Appendix 2](#appendix-2) for more information.)
 
 The message follows this pattern:
 
