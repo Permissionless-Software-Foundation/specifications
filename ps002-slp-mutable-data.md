@@ -20,9 +20,9 @@ Chris Troutner
 
 ## 1. Introduction
 
-The Simple Ledger Protocol (SLP) for tokens includes a `document hash` field in the [specification for the Genesis transaction](https://github.com/simpleledger/slp-specifications/blob/master/slp-token-type-1.md#genesis---token-genesis-transaction). This field is intended to hold a TXID for a Bitcoin Cash transaction. This TXID was originally intended to point to an on-chain file uploaded with the [Bitcoin Files Specification](https://github.com/simpleledger/slp-specifications/blob/master/bitcoinfiles.md).
+The Simple Ledger Protocol (SLP) for tokens includes a `token_document_hash` field in the [specification for the Genesis transaction](https://github.com/simpleledger/slp-specifications/blob/master/slp-token-type-1.md#genesis---token-genesis-transaction). This field is intended to hold a TXID for a Bitcoin Cash transaction. This TXID was originally intended to point to an on-chain file uploaded with the [Bitcoin Files Specification](https://github.com/simpleledger/slp-specifications/blob/master/bitcoinfiles.md).
 
-This document specifies how to leverage the `document hash` field when creating an SLP token to point to mutable data (data that can change over time). This provides many new use cases. Here are a few examples:
+This document specifies how to leverage the `token_document_hash` field when creating an SLP token to point to mutable data (data that can change over time). This provides many new use cases. Here are a few examples:
 
 - Token Icons
 - Tracking state of tokenized assets (like a video game character)
@@ -35,15 +35,15 @@ This specification is a general approach for wallets to discover additional muta
 There are four parts to _encoding a pointer_ to mutable data and attaching it to the Genesis transaction for creating a new SLP token:
 
 1. Create a [MSP bitcoincash address](./ps001-media-sharing.md).
-2. Insert the address into JSON file
-3. Upload JSON file to the chain using Bitcoin Files Protocol
-4. Include TXID in document hash when creating a token.
+2. Insert the address into JSON file.
+3. Upload JSON file to the blockchain.
+4. Include the TXID in the `token_document_hash` field when creating a token.
 
 Likewise, there are four steps to unwind the process when wallet software wants to _parse and download_ the data:
 
-1. Look up the document hash in the token's Genesis transaction.
-2. Retrieve the BFP file from the blockchain.
-3. Open the JSON document and retrieve the MSP bitcoin cash address.
+1. Look up the `token_document_hash` field in the token's Genesis transaction.
+2. Retrieve the JSON data from the blockchain.
+3. Retrieve the MSP bitcoin cash address from the JSON.
 4. Download the data pointed to by the MSP address.
 
 ## 3. Pointing to Mutable Data
@@ -64,7 +64,9 @@ Once a Bitcoin Cash address has been created, that address can be written into a
 
 ### 3.3 Upload JSON File On-Chain
 
-The JSON file can then be uploaded to the Bitcoin Cash blockchain using the [Bitcoin Files Specification](https://github.com/simpleledger/slp-specifications/blob/master/bitcoinfiles.md). [Here is example code](https://github.com/Permissionless-Software-Foundation/bch-js-examples/tree/master/applications/bfp) for writing such a file using BFP.
+The JSON data above can be uploaded to the blockchain using the OP_RETURN of a single transaction. [Here is example code](https://github.com/Permissionless-Software-Foundation/bch-js-examples/tree/master/low-level/op-return) for working with OP_RETURN. Also, the [memo-push](https://github.com/christroutner/memo-push) library can be used for this.
+
+- [Here is an example transaction](https://explorer.bitcoin.com/bch/tx/4b7d5eb0d27157c2862e0d507f6ea9438fa94230999690233610cc20d9b584f7) encoding an address in JSON, using the [Memo.cash protocol](https://memo.cash/protocol).
 
 ### 3.4 Use TXID in Document Hash Field
 
