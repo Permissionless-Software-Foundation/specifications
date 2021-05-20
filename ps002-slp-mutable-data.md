@@ -19,23 +19,24 @@ Chris Troutner
 
 ## 1. Introduction
 
-The Simple Ledger Protocol (SLP) for tokens includes a `token_document_hash` field in the [specification for the Genesis transaction](https://github.com/simpleledger/slp-specifications/blob/master/slp-token-type-1.md#genesis---token-genesis-transaction). This field is intended to hold a TXID for a Bitcoin Cash transaction. This TXID was originally intended to point to an on-chain file uploaded with the [Bitcoin Files Specification](https://github.com/simpleledger/slp-specifications/blob/master/bitcoinfiles.md).
+The Simple Ledger Protocol (SLP) for tokens includes a `token_document_hash` field in the [specification for the Genesis transaction](https://github.com/simpleledger/slp-specifications/blob/master/slp-token-type-1.md#genesis---token-genesis-transaction). This field is intended to hold a TXID for a Bitcoin Cash transaction. This TXID was originally intended to point to an on-chain file uploaded with the [Bitcoin Files Specification](https://github.com/simpleledger/slp-specifications/blob/master/bitcoinfiles.md), but can be used with any arbitrary BCH transaction.
 
-This document specifies how to leverage the `token_document_hash` field when creating an SLP token to point to mutable data (data that can change over time). This provides many new use cases. Here are a few examples:
+This document specifies how to leverage the `token_document_hash` field when creating an SLP token, to point to mutable data (data that can change over time). This provides many new use cases. Here are a few examples:
 
 - Token Icons
 - Tracking state of tokenized assets (like a video game character)
 - Security tokens compliant with arbitrary regulation rules.
+- NFTs that leverage both mutable and immutable data.
 
 This specification is a general approach for wallets to discover additional mutable data associated with the token.
 
 ## 2. Protocol Overview
 
-There are four parts to _encoding a pointer_ to mutable data and attaching it to the Genesis transaction for creating a new SLP token:
+There are four parts to _encoding a pointer_ to mutable data and attaching it to the Genesis transaction when creating a new SLP token:
 
 1. Create a [MSP bitcoincash address](./ps001-media-sharing.md).
-2. Insert the address into JSON file.
-3. Upload JSON file to the blockchain.
+2. Insert the address into a JSON file.
+3. Upload the JSON file to the blockchain, which generates a TXID.
 4. Include the TXID in the `token_document_hash` field when creating a token.
 
 Likewise, there are four steps to unwind the process when wallet software wants to _parse and download_ the data:
@@ -53,7 +54,7 @@ The first step is to create a system for pointing to mutable data. This specific
 
 ### 3.2 Insert Address into JSON File
 
-Once a Bitcoin Cash address has been created, that address can be written into a JSON document such as this:
+Once a Bitcoin Cash address has been created, that address can be written into a JSON document. Here is an example:
 
 ```json
 {
@@ -86,6 +87,8 @@ The data pointed to by the MSP address can be any kind of arbitrary data, howeve
   "name": "psf-logo.png"
 }
 ```
+
+This state can be updated by creating a new JSON document, uploading it to IPFS, and writing a new transaction with the new IPFS CID to the blockchain via the [MSP protocol](./ps001-media-sharing.md).
 
 ## 4. Reading Mutible Data
 
