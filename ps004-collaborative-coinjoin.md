@@ -28,7 +28,7 @@ For coordination the [IPFS](https://ipfs.io) network will be used, specifically 
 
 ## 3. Base Coordination
 
-To bootstrap coordination between peers (wallets), a base pubsub channel needs to be established. The [PS001 Media Sharing protocol](https://github.com/Permissionless-Software-Foundation/specifications/blob/master/ps001-media-sharing.md) or more basic [Memo.cash protocol](https://github.com/Permissionless-Software-Foundation/specifications/blob/master/ps001-media-sharing.md) provides an excellent medium to establish this base pubsub channel.
+To bootstrap coordination between peers (wallets), a base pubsub channel needs to be established. The [PS001 Media Sharing protocol](https://github.com/Permissionless-Software-Foundation/specifications/blob/master/ps001-media-sharing.md) or more basic [Memo.cash protocol](https://memo.cash/protocol) provides an excellent medium to establish this base pubsub channel.
 
 A simple pubsub channel can be published to the BCH blockchain. The channel can be any arbitrary string, for example 'myCoinJoinChannel1234'. The important thing is that the particular channel can be detected by wallets who want to coordinate. Writing messages to the uncensorable blockchain is a perfect way to communicate the channel name to wallet nodes.
 
@@ -86,7 +86,9 @@ Wallets can track the above requirements between other peer wallets. When the re
 
 - The wallet will wait until all particpants have acknowledged and agreed to the transactions.
 
-  - The acknowledgement message must include: - The UTXO inputs they want to add to the transaction. - The outputs they want to add to the transaction.
+  - The acknowledgement message must include:
+    - The UTXO inputs they want to add to the transaction.
+    - The outputs they want to add to the transaction.
 
 - The wallet will compile an unsigned transaction from the ack messages. It will then broadcast the unsigned tx to the participants.
 
