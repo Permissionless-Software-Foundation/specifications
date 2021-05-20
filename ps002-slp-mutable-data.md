@@ -14,7 +14,6 @@ Chris Troutner
 
 ## Acknowledgements
 
-- James Cramer created the [Bitcoin Files Specification](https://github.com/simpleledger/slp-specifications/blob/master/bitcoinfiles.md) leveraged by this document.
 - This document builds on top of the [SLP Token Type 1 Protocol](https://github.com/simpleledger/slp-specifications/blob/master/slp-token-type-1.md).
 - This document builds on top of the [PS001 Media Sharing Protocol](./ps001-media-sharing.md)
 
@@ -74,7 +73,7 @@ The final step is to create a new SLP token. This could be of Token Type 1, or a
 
 ### 3.5 Updating Data
 
-The data pointed to by the MSP address can be any kind of arbitrary data, however [JSON-LD](https://json-ld.org/) formatted Linked Data following the [Schema.org](https://schema.org/) schema is recommended.
+The data pointed to by the MSP address can be any kind of arbitrary data, however [JSON-LD](https://json-ld.org/) formatted Linked Data following the [Schema.org](https://schema.org/) schema is recommended. Here is an example of what a token icon might look like:
 
 ```
 {
