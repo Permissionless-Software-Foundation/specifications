@@ -110,7 +110,7 @@ Wallets can track the above requirements between other peer wallets. When the re
 
 ### 6.5 Corner Cases
 
-- If a wallet receives a new _TX Building_ message before it receives a response from all participants, it should send out a _Canceling_ message to all participants and then respond to the _Organization_ message. This ensure that all participants default into collaborative behavior instead of selfish behavior.
+- If a wallet receives a new _TX Building_ message before it receives a response from all participants, it should send out a _Canceling_ message to all participants and then respond to the _TX Building_ message. This ensure that all participants default into collaborative behavior instead of selfish behavior.
 
 ## 7 Cleanup
 
