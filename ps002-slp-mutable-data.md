@@ -70,8 +70,45 @@ The JSON data above can be uploaded to the blockchain using the OP_RETURN of a s
 
 ### 3.4 Use TXID in Document Hash Field
 
-The final step is to create a new SLP token. This could be of Token Type 1, or an NFT. Any SLP token has a `document hash` field in the Genesis transaction. The TXID output from the BFP file upload can be inserted into this field.
+The final step is to create a new SLP token. This could be of Token Type 1, or an NFT. Any SLP token has a `token_document_hash` field in the Genesis transaction. The TXID output from step 3.3 can be inserted into this field.
 
-### 4. Reading Mutible Data
+### 3.5 Updating Data
 
-Additional details will be provided.
+The data pointed to by the MSP address can be any kind of arbitrary data, however [JSON-LD](https://json-ld.org/) formatted Linked Data following the [Schema.org](https://schema.org/) schema is recommended.
+
+```
+{
+  "@context": "https://schema.org",
+  "@type": "ImageObject",
+  "author": "Chris Troutner",
+  "contentUrl": "https://hub.textile.io/ipfs/bafkreiasjlveyusmkgludz6vopzg5t5g3lefgtu5oudoawjrcttmgwjea4",
+  "datePublished": "2021-05-20",
+  "description": "PSF Logo",
+  "name": "psf-logo.png"
+}
+```
+
+## 4. Reading Mutible Data
+
+Wallet software can unwind the process to read the data or 'state' of the token by following these steps.
+
+### 4.1 Retrieve the MSP Address
+
+When working with SLP tokens, it is a normal part of the workflow for wallets to retrieve the Genesis data for the token. This is where critical metadata such as the `decimals` is stored. In the vast majority of cases, retrieving the `token_document_hash` data does not require any extra steps.
+
+The BCH blockchain should be queried for the transaction data corresponding to the TXID stored in the `token_document_hash`field, and the OP_RETURN in that transaction should be decoded to retrieve the JSON data containing the MSP address.
+
+### 4.2 Retrieve the Token State
+
+The transaction history of the MSP address should be retrieved, and the list of TXIDs should be ordered with respect to block height. Newest transactions should be evaluated first.
+
+With the ordered list of TXIDs, the wallet can walk the history of the MSP address and retrieve the first valid entry as the current state of the token. A valid entry meets the following requirements:
+
+- The OP_RETURN of the transaction contains an IPFS hash, preferably following the [MSP specification](./ps001-media-sharing.md).
+- The first input of the transaction originates from the MSP address. This ensures the holder of the private key updated the state, and the state was not 'spoofed' by another BCH address.
+
+Once the first valid state data is found, the search can be ended and the wallet can act on the state. Other entries act as an immutible, append-only log of previous state. This is useful for other applications, but not necessary for a wallet to act on the current state.
+
+### 4.3 Retrieve State from IPFS
+
+With the IPFS hash, the wallet can then retrieve the state of the token from any IPFS gateway or any node on the IPFS network. It is assumed this data is also in JSON format.
