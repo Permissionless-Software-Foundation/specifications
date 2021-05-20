@@ -90,7 +90,7 @@ Wallets can track the above requirements between other peer wallets. When the re
     - The UTXO inputs they want to add to the transaction.
     - The outputs they want to add to the transaction.
 
-- The wallet will compile an unsigned transaction from the ack messages. It will then broadcast the unsigned tx to the participants.
+- The wallet will compile an unsigned transaction from the ack messages. It will then send a copy of the unsigned tx to the participants.
 
 - Each participant will check their part of the transaction. If acceptible, they will sign and send back the partially-signed transaction.
 
@@ -106,11 +106,11 @@ Wallets can track the above requirements between other peer wallets. When the re
 
 ### 6.4 Canceling
 
-- At any time, a wallet can cancel the transaction by sending a Cancelation message containing the UUID for Organization message.
+- At any time, a wallet can cancel the transaction by sending a Cancelation message containing the UUID of the _TX Building_ message.
 
 ### 6.5 Corner Cases
 
-- If a wallet receives a new _Organization_ message before it receives a response from all participants, it should send out a _Canceling_ message to all participants and then respond to the _Organization_ message. This ensure that all participants default into collaborative behavior instead of selfish behavior.
+- If a wallet receives a new _TX Building_ message before it receives a response from all participants, it should send out a _Canceling_ message to all participants and then respond to the _Organization_ message. This ensure that all participants default into collaborative behavior instead of selfish behavior.
 
 ## 7 Cleanup
 
