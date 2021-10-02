@@ -42,10 +42,6 @@ Overview:
 - The address holding the minting baton is public and part of the program. Known by the minters.
 - Commands needed: mint, move (baton), invalidate (minting round)
 - The app marks a nonce as invalid after a mint succeeds.
-- Create a repository:
-  - A directory with a fork of the memo-push tool, for publishing messages with OP_RETURNs. - Use interactive prompt to collect the info.
-  - A copy of the public program.
-  - An app for generating the setup information.
 
 ### Basic workflow:
 
@@ -66,3 +62,10 @@ Overview:
   - Drypt the mnemonic
   - Mint new tokens and send them to the specified address.
   - Broadcast an OP_RETURN transaction to mark the nonce of the current round invalid.
+
+### Next steps:
+
+- Create a repository:
+  - A directory with a fork of the memo-push tool, for publishing messages with OP_RETURNs. - Use interactive prompt to collect the info.
+  - A copy of the public program.
+  - An app for generating the setup information.
