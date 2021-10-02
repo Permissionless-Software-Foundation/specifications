@@ -66,6 +66,7 @@ Overview:
 ### Next steps:
 
 - Create a repository:
-  - A directory with a fork of the memo-push tool, for publishing messages with OP_RETURNs. - Use interactive prompt to collect the info.
+  - A directory with a fork of the memo-push tool, for publishing messages with OP_RETURNs.
+  - Use interactive prompt to collect the info.
   - A copy of the public program.
   - An app for generating the setup information.
