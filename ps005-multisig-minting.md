@@ -59,7 +59,7 @@ Overview:
   - Identify all the nonces that are invalid.
   - Collect the messages with the highest nonce value.
   - Collect the secret keys.
-  - Drypt the mnemonic
+  - Decrypt the mnemonic
   - Mint new tokens and send them to the specified address.
   - Broadcast an OP_RETURN transaction to mark the nonce of the current round invalid.
 
