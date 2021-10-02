@@ -26,11 +26,12 @@ Overview:
 - A JavaScript program that would allow n-of-m signers to mint new tokens.
 - The 'minting address' is the address holding the minting baton.
 - The message they each sign would be an instruction on how many tokens to mint and where to send them.
-- MINT header.
-- <qty> of tokens to mint
-- <addr> the address to send them to.
-- <nonce> all signers must include the same nonce, to uniquely identify the round of minting.
-- <secret key> Shamir's secret key, as a hex string
+- OP_RETURN Message components:
+  - MINT header.
+  - _<qty>_ of tokens to mint
+  - _<addr>_ the address to send them to.
+  - _<nonce>_ all signers must include the same nonce, to uniquely identify the round of minting.
+  - _<secret key>_ Shamir's secret key, as a hex string
 - The message encrypted with Shamir's secret key is the 12-word mnemonic of the minting address.
   - The encrypted 12-word mnemonic is hard-coded into the app.
 - The OP_RETURN message is encrypted with the public key of the minting address.
