@@ -28,10 +28,10 @@ Overview:
 - The message they each sign would be an instruction on how many tokens to mint and where to send them.
 - OP_RETURN Message components:
   - MINT header.
-  - _<qty>_ of tokens to mint
-  - _<addr>_ the address to send them to.
-  - _<nonce>_ all signers must include the same nonce, to uniquely identify the round of minting.
-  - _<secret key>_ Shamir's secret key, as a hex string
+  - _qty_ of tokens to mint
+  - _addr_ the address to send them to.
+  - _nonce_ all signers must include the same nonce, to uniquely identify the round of minting.
+  - _secret key_ Shamir's secret key, as a hex string
 - The message encrypted with Shamir's secret key is the 12-word mnemonic of the minting address.
   - The encrypted 12-word mnemonic is hard-coded into the app.
 - The OP_RETURN message is encrypted with the public key of the minting address.
@@ -55,7 +55,7 @@ Overview:
   - To mint new tokens, each signer is given a nonce. An integer number that has not been used before.
   - A minimum of 'n' signers broadcast a transaction with an OP_RETURN, and a dust output sent to the minting address.
   - The OP_RETURN message is encrypted with the public key of the minting address.
-  - Example of an unencrypted message: 'MINT <qty> <addr> <nonce> <secret key>'
+  - Example of an unencrypted message: 'MINT qty addr nonce secret-key'
 
 - Immutable app:
   - Download the transaction history of the minting address.
