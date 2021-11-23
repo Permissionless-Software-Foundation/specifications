@@ -6,7 +6,7 @@
 
 ### Date originally published: October 2, 2021
 
-### Date last updated: October 2, 2021
+### Date last updated: November 23, 2021
 
 ## Authors
 
@@ -35,6 +35,7 @@ Overview:
 - The message encrypted with Shamir's secret key is the 12-word mnemonic of the minting address.
   - The encrypted 12-word mnemonic is hard-coded into the app.
 - The OP_RETURN message is encrypted with the public key of the minting address.
+  - **PROBLEM:** The OP_RETURN messages can't be decrypted without the private key, and the key controls the minting baton. It's a chicken-and-egg.
   - The encrypted message is published to the blockchain in an OP_RETURN message.
   - The minting address is tagged with some dust.
 - The node.js program for minting new tokens is stateless. It can be published to IPFS and stored on Filecoin.
