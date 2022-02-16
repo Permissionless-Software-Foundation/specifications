@@ -12,6 +12,9 @@
 
 Chris Troutner
 
+## Deprecated
+This specification is deprecated and officially dead. There is no way to build the proposed scheme with the public app having access to a private key.
+
 ## 1. Introduction
 
 This is just a sketch to get the idea out. This will be refined in the future. Below if a _very_ rough draft of a workflow for minting new tokens. As opposed to using the low-level blockchain primitives, the multisig feature is instead done at a higher level in a node.js app. Several secrets are combined to decrypt a 12-word mnemonic that controls the minting baton.
