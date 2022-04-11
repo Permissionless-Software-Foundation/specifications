@@ -35,17 +35,22 @@ Mutable data is controlled by a key pair. This specification is a general approa
 
 There are four parts to _encoding a pointer_ to mutable data and attaching it to the Genesis transaction when creating a new SLP token:
 
-1. Create a [MSP bitcoincash address](./ps001-media-sharing.md).
-2. Insert the address into a JSON file.
-3. Upload the JSON file to the blockchain, which generates a TXID.
-4. Include the TXID in the `token_document_hash` field when creating a token.
+1. Initializing the mutable data.
+2. Create immutable data.
+3. Create the token.
+4. Update mutable data.
 
-Likewise, there are four steps to unwind the process when wallet software wants to _parse and download_ the data:
+Step two is optional. It allows the token creator to attach immutable (unchangeable) to the token at the time of creation.
 
-1. Look up the `token_document_hash` field in the token's Genesis transaction.
-2. Retrieve the JSON data from the blockchain.
-3. Retrieve the MSP bitcoin cash address from the JSON.
-4. Download the data pointed to by the MSP address.
+## 3. Initializing Mutable Data
+
+Mutable data is controlled by a key pair. Whomever controls the private key, can update the mutable data. The output of this step is a TXID which can be included in the tokens `token_document_hash` field.
+
+- Generate an key pair for controlling the mutable data (the *mutable data address*).
+- Broadcast a transaction with the following properties:
+  - The **first** output contains an OP_RETURN with a JSON containing an `msp` key with the value being the *mutable data address*.
+  - The **second** output contains an output going to the *mutable data address*.
+- The TXID from this transaction goes into the `token_document_hash` field of the new token.
 
 ## 3. Pointing to Mutable Data
 
