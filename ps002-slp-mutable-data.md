@@ -33,21 +33,21 @@ Mutable data is controlled by a key pair. This specification is a general approa
 
 ## 2. Protocol Overview
 
-There are four parts to _encoding a pointer_ to mutable data and attaching it to the Genesis transaction when creating a new SLP token:
+There are four parts to _encoding a pointer_ to mutable data and attaching it to the Genesis transaction, when creating a new SLP token:
 
-1. Initializing the mutable data.
+1. Initialize the *mutable data address*.
 2. Create immutable data.
 3. Create the token.
 4. Update mutable data.
 
 Step two is optional. It allows the token creator to attach immutable (unchangeable) to the token at the time of creation.
 
-## 3. Initializing Mutable Data
+## 3. Initialize the Mutable Data Address
 
 Mutable data is controlled by a key pair. Whomever controls the private key, can update the mutable data. The output of this step is a TXID which can be included in the tokens `token_document_hash` field.
 
-- Generate an key pair for controlling the mutable data (the *mutable data address*).
-- Broadcast a transaction with the following properties:
+- Generate a private/public key pair for controlling the mutable data (the *mutable data address*).
+- Broadcast a transaction (from any address) with the following properties:
   - The **first** output contains an OP_RETURN with a JSON containing an `msp` key with the value being the *mutable data address*.
   - The **second** output contains an output going to the *mutable data address*.
 - The TXID from this transaction goes into the `token_document_hash` field of the new token.
