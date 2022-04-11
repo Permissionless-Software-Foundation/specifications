@@ -31,6 +31,8 @@ Mutable data is controlled by a key pair. This specification is a general approa
 - Token creators to add mutable data at the time of token creation.
 - Wallets to discover mutable data associated with a token.
 
+In this specification, [IPFS](https://ipfs.io) is called out for off-chain data storage. It should be understood that the intention is to for developers implementing this specification to upload that data to the Filecoin blockchain, and thereby make the data permanently available over IPFS. The easiest service to do this is [web3.storage](https://web3.storage).
+
 ## 2. Protocol Overview
 
 There are four parts to _encoding a pointer_ to mutable data and attaching it to the Genesis transaction, when creating a new SLP token:
@@ -44,7 +46,7 @@ Step two is optional. It allows the token creator to attach immutable (unchangea
 
 ## 3. Initialize the Mutable Data Address
 
-Mutable data is controlled by a key pair. Whomever controls the private key, can update the mutable data. The output of this step is a TXID which can be included in the tokens `token_document_hash` field.
+Mutable data is controlled by a key pair. Whomever controls the private key can update the mutable data. The output of this step is a TXID which can be included in the tokens `token_document_hash` field.
 
 - Generate a private/public key pair for controlling the mutable data (the *mutable data address*).
 - Broadcast a transaction (from any address) with the following properties:
@@ -54,7 +56,7 @@ Mutable data is controlled by a key pair. Whomever controls the private key, can
 
 ## 4. Create Immutable Data
 
-This step is optional. It writes an [IPFS CID](https://proto.school/anatomy-of-a-cid/01) to the tokens `token_document_url` field. This field is often used to display a URL associated with the token, and is limited by the 220 bytes of the OP_RETURN. By moving that data to a JSON file linked by the CID, an unlimited amount of data can be captured, while retaining the immutable nature of the `token_document_url` field.
+This step is optional. It writes an [IPFS CID](https://proto.school/anatomy-of-a-cid/01) to the tokens `token_document_url` field. This field is often used to display a URL associated with the token, and is limited by the 223 bytes of the OP_RETURN. By moving that data to a JSON file linked by the CID, an unlimited amount of data can be captured, while retaining the immutable nature of the `token_document_url` field.
 
 - Generate a JSON file containing any information that should be captured in the immutable data.
 - Upload the JSON object to IPFS, which results in a CID.
