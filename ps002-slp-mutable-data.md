@@ -2,33 +2,34 @@
 
 ## Permissionless Software Foundation Specification 002 (PS002)
 
-### Specification version: 1.0.0
+### Specification version: 1.1.0
 
 ### Date originally published: July 20, 2020
 
-### Date last updated: May 20, 2021
+### Date last updated: April 11, 2022
 
 ## Authors
 
 Chris Troutner
 
-## Acknowledgements
+## Acknowledgments
 
 - This document builds on top of the [SLP Token Type 1 Protocol](https://github.com/simpleledger/slp-specifications/blob/master/slp-token-type-1.md).
-- This document builds on top of the [PS001 Media Sharing Protocol](./ps001-media-sharing.md)
 
 ## 1. Introduction
 
 The Simple Ledger Protocol (SLP) for tokens includes a `token_document_hash` field in the [specification for the Genesis transaction](https://github.com/simpleledger/slp-specifications/blob/master/slp-token-type-1.md#genesis---token-genesis-transaction). This field is intended to hold a TXID for a Bitcoin Cash transaction. This TXID was originally intended to point to an on-chain file uploaded with the [Bitcoin Files Specification](https://github.com/simpleledger/slp-specifications/blob/master/bitcoinfiles.md), but can be used with any arbitrary BCH transaction.
 
-This document specifies how to leverage the `token_document_hash` field when creating an SLP token, to point to mutable data (data that can change over time). This provides many new use cases. Here are a few examples:
+This document specifies how to leverage the `token_document_hash` field when creating a SLP token, to point to mutable data (data that can change over time). This provides many new use cases. Here are a few examples:
 
 - Token Icons
-- Tracking state of tokenized assets (like a video game character)
+- Tracking state of tokenized assets (like a video game character or supply chain status)
 - Security tokens compliant with arbitrary regulation rules.
 - NFTs that leverage both mutable and immutable data.
 
-This specification is a general approach for wallets to discover additional mutable data associated with the token.
+Mutable data is controlled by a key pair. This specification is a general approach for:
+- Token creators to add mutable data at the time of token creation.
+- Wallets to discover mutable data associated with a token.
 
 ## 2. Protocol Overview
 
