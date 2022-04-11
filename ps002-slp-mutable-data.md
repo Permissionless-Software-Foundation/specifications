@@ -31,7 +31,7 @@ Mutable data is controlled by a key pair. This specification is a general approa
 - Token creators to add mutable data at the time of token creation.
 - Wallets to discover mutable data associated with a token.
 
-In this specification, [IPFS](https://ipfs.io) is called out for off-chain data storage. It should be understood that the intention is to for developers implementing this specification to upload that data to the Filecoin blockchain, and thereby make the data permanently available over IPFS. The easiest service to do this is [web3.storage](https://web3.storage).
+In this specification, [IPFS](https://ipfs.io) is used for off-chain data storage. It should be understood that the intention is to for developers implementing this specification to upload that data to the Filecoin blockchain, and thereby make the data permanently available over IPFS. The easiest service to do this is [web3.storage](https://web3.storage).
 
 ## 2. Protocol Overview
 
@@ -56,7 +56,7 @@ Mutable data is controlled by a key pair. Whomever controls the private key can 
 
 ## 4. Create Immutable Data
 
-This step is optional. It writes an [IPFS CID](https://proto.school/anatomy-of-a-cid/01) to the tokens `token_document_url` field. This field is often used to display a URL associated with the token, and is limited by the 223 bytes of the OP_RETURN. By moving that data to a JSON file linked by the CID, an unlimited amount of data can be captured, while retaining the immutable nature of the `token_document_url` field.
+This step is optional. It writes a [IPFS CID](https://proto.school/anatomy-of-a-cid/01) to the tokens `token_document_url` field. This field is often used to display a URL associated with the token, and is limited by the 223 bytes of the OP_RETURN. By moving that data to a JSON file linked by the CID, an unlimited amount of data can be captured, while retaining the immutable nature of the `token_document_url` field.
 
 - Generate a JSON file containing any information that should be captured in the immutable data.
 - Upload the JSON object to IPFS, which results in a CID.
@@ -66,8 +66,8 @@ This step is optional. It writes an [IPFS CID](https://proto.school/anatomy-of-a
 
 There is no change to the workflow described in the [SLP Token Specification](https://github.com/simpleledger/slp-specifications/blob/master/slp-token-type-1.md) when creating a token. This specification simply leverages these two properties of the Gensis transaction:
 
-- `token_document_url` contains the CID from section 4 for retrieving immutable data.
 - `token_document_hash` contains the TXID from section 3 for retrieving mutable data.
+- `token_document_url` contains the CID from section 4 for retrieving immutable data.
 
 ## 6. Update Mutable Data
 
@@ -79,6 +79,12 @@ The *mutable data address* must have some BCH to pay transaction fees. Updates n
 - Generate a transaction with the following properties:
   - The **first input** must be spent from the *mutable data address* address.
   - The **first output** must be an OP_RETURN containing JSON with a key value of `cid` and a value of the CID that can be retrieved over IPFS.
+
+```
+{
+  "cid": "QmTu6DWuAdq36EZQHGs1QDhSJBpbZYcpcbGH9S42tNB1aX"
+}
+```
 
 ## 7. Reading Mutable Data
 
