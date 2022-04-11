@@ -36,11 +36,11 @@ Mutable data is controlled by a key pair. This specification is a general approa
 There are four parts to _encoding a pointer_ to mutable data and attaching it to the Genesis transaction, when creating a new SLP token:
 
 1. Initialize the *mutable data address*.
-2. Create immutable data.
+2. Create immutable data (optional).
 3. Create the token.
 4. Update mutable data.
 
-Step two is optional. It allows the token creator to attach immutable (unchangeable) to the token at the time of creation.
+Step two is optional. It allows the token creator to attach immutable (unchangeable) data to the token at the time of creation.
 
 ## 3. Initialize the Mutable Data Address
 
@@ -52,35 +52,48 @@ Mutable data is controlled by a key pair. Whomever controls the private key, can
   - The **second** output contains an output going to the *mutable data address*.
 - The TXID from this transaction goes into the `token_document_hash` field of the new token.
 
-## 3. Pointing to Mutable Data
+## 4. Create Immutable Data
 
-### 3.1 Create An Address
+This step is optional. It writes an [IPFS CID](https://proto.school/anatomy-of-a-cid/01) to the tokens `token_document_url` field. This field is often used to display a URL associated with the token, and is limited by the 220 bytes of the OP_RETURN. By moving that data to a JSON file linked by the CID, an unlimited amount of data can be captured, while retaining the immutable nature of the `token_document_url` field.
 
-The first step is to create a system for pointing to mutable data. This specification leverages the [PS001 Media Sharing Protocol](./ps001-media-sharing.md) and the [memo-push](https://github.com/christroutner/memo-push) app to point at changing data, stored on the IPFS network, as described on [UncensorablePublishing.com](https://uncensorablepublishing.com/).
+- Generate a JSON file containing any information that should be captured in the immutable data.
+- Upload the JSON object to IPFS, which results in a CID.
+- Write the CID into the `token_document_url` field of the token at the time of creation.
 
-### 3.2 Insert Address into JSON File
+## 5. Create the Token
 
-Once a Bitcoin Cash address has been created, that address can be written into a JSON document. Here is an example:
+There is no change to the workflow described in the [SLP Token Specification](https://github.com/simpleledger/slp-specifications/blob/master/slp-token-type-1.md) when creating a token. This specification simply leverages these two properties of the Gensis transaction:
 
-```json
-{
-  "mspAddress": "bitcoincash:qpt5kra7j4dhqkws6l4g95cxxemyzueyavyntd39cz"
-}
-```
+- `token_document_url` contains the CID from section 4 for retrieving immutable data.
+- `token_document_hash` contains the TXID from section 3 for retrieving mutable data.
 
-### 3.3 Upload JSON File On-Chain
+## 6. Update Mutable Data
 
-The JSON data above can be uploaded to the blockchain using the OP_RETURN of a single transaction. [Here is example code](https://github.com/Permissionless-Software-Foundation/bch-js-examples/tree/master/low-level/op-return) for working with OP_RETURN. Also, the [memo-push](https://github.com/christroutner/memo-push) library can be used for this.
+Updating mutable data should be executed at least once, immediately following the creation of the token, so that wallets can properly retrieve the data. However, the steps below can be executed at any time, to update the token to point to the latest data.
 
-- [Here is an example transaction](https://explorer.bitcoin.com/bch/tx/4b7d5eb0d27157c2862e0d507f6ea9438fa94230999690233610cc20d9b584f7) encoding an address in JSON, using the [Memo.cash protocol](https://memo.cash/protocol).
+The *mutable data address* must have some BCH to pay transaction fees. Updates not originating from the *mutable data address* are ignored. This prevents 'malicious updates' from other addresses. Only the owner of the *mutable data address* private key can update the mutable data.
 
-### 3.4 Use TXID in Document Hash Field
+- Generate a JSON file and upload it to IPFS. This results in a CID.
+- Generate a transaction with the following properties:
+  - The **first input** must be spent from the *mutable data address* address.
+  - The **first output** must be an OP_RETURN containing JSON with a key value of `cid` and a value of the CID that can be retrieved over IPFS.
 
-The final step is to create a new SLP token. This could be of Token Type 1, or an NFT. Any SLP token has a `token_document_hash` field in the Genesis transaction. The TXID output from step 3.3 can be inserted into this field.
+## 7. Reading Mutable Data
 
-### 3.5 Updating Data
+Reading mutable data is the process by which blockchain software (like [bch-api](https://github.com/Permissionless-Software-Foundation/bch-api)) retrieves the mutable data associated with a token. The process is as follows:
 
-The data pointed to by the MSP address can be any kind of arbitrary data, however [JSON-LD](https://json-ld.org/) formatted Linked Data following the [Schema.org](https://schema.org/) schema is recommended. Here is an example of what a token icon might look like:
+- Given the `token ID` of the token, the Genesis data for the token is retrieved.
+- Get transaction data for the TXID in the `token_document_hash` field.
+- Get the *mutable data address* from the second output of the transaction data.
+- Get the transaction history for the *mutable data address*. It should be in chronological order with the newest TX first.
+- Traverse the transaction history until a TX with the following properties are found:
+  - First input is spent by the *mutable data address* address.
+  - First output is OP_RETURN containing JSON with a `cid` property.
+- Retrieve the JSON object from IPFS using the CID.
+
+## 8. Mutable Data Recommendations
+
+The mutable data pointed can be any kind of arbitrary data, however [JSON-LD](https://json-ld.org/) formatted Linked Data following the [Schema.org](https://schema.org/) schema is recommended. Here is an example of what a token icon might look like:
 
 ```
 {
@@ -93,30 +106,3 @@ The data pointed to by the MSP address can be any kind of arbitrary data, howeve
   "name": "psf-logo.png"
 }
 ```
-
-This state can be updated by creating a new JSON document, uploading it to IPFS, and writing a new transaction with the new IPFS CID to the blockchain via the [MSP protocol](./ps001-media-sharing.md).
-
-## 4. Reading Mutible Data
-
-Wallet software can unwind the process to read the data or 'state' of the token by following these steps.
-
-### 4.1 Retrieve the MSP Address
-
-When working with SLP tokens, it is a normal part of the workflow for wallets to retrieve the Genesis data for the token. This is where critical metadata such as the `decimals` is stored. In the vast majority of cases, retrieving the `token_document_hash` data does not require any extra steps.
-
-The BCH blockchain should be queried for the transaction data corresponding to the TXID stored in the `token_document_hash`field, and the OP_RETURN in that transaction should be decoded to retrieve the JSON data containing the MSP address.
-
-### 4.2 Retrieve the Token State
-
-The transaction history of the MSP address should be retrieved, and the list of TXIDs should be ordered with respect to block height. Newest transactions should be evaluated first.
-
-With the ordered list of TXIDs, the wallet can walk the history of the MSP address and retrieve the first valid entry as the current state of the token. A valid entry meets the following requirements:
-
-- The OP_RETURN of the transaction contains an IPFS hash, preferably following the [MSP specification](./ps001-media-sharing.md).
-- The first input of the transaction originates from the MSP address. This ensures the holder of the private key updated the state, and the state was not 'spoofed' by another BCH address.
-
-Once the first valid state data is found, the search can be ended and the wallet can act on the state. Other entries act as an immutible, append-only log of previous state. This is useful for other applications, but not necessary for a wallet to act on the current state.
-
-### 4.3 Retrieve State from IPFS
-
-With the IPFS hash, the wallet can then retrieve the state of the token from any IPFS gateway or any node on the IPFS network. It is assumed this data is also in JSON format.
