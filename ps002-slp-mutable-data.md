@@ -83,7 +83,7 @@ The *mutable data address* must have some BCH to pay transaction fees. Updates n
 
 ```
 {
-  "cid": "QmTu6DWuAdq36EZQHGs1QDhSJBpbZYcpcbGH9S42tNB1aX"
+  "cid": "ipfs://QmTu6DWuAdq36EZQHGs1QDhSJBpbZYcpcbGH9S42tNB1aX"
 }
 ```
 
