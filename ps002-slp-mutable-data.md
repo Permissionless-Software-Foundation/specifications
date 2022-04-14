@@ -60,7 +60,8 @@ This step is optional. It writes a [IPFS CID](https://proto.school/anatomy-of-a-
 
 - Generate a JSON file containing any information that should be captured in the immutable data.
 - Upload the JSON object to IPFS, which results in a CID.
-- Write the CID into the `token_document_url` field of the token at the time of creation.
+- Write the CID into the `token_document_url` field of the token at the time of creation. Use the `ipfs://` prefix to explicitly indicate that it is an IPFS CID, like this:
+  - `ipfs://QmTu6DWuAdq36EZQHGs1QDhSJBpbZYcpcbGH9S42tNB1aX`
 
 ## 5. Create the Token
 
