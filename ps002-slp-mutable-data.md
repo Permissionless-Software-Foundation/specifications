@@ -6,7 +6,7 @@
 
 ### Date originally published: July 20, 2020
 
-### Date last updated: April 11, 2022
+### Date last updated: April 17, 2022
 
 ## Authors
 
@@ -31,7 +31,7 @@ Mutable data is controlled by a key pair. This specification is a general approa
 - Token creators to add mutable data at the time of token creation.
 - Wallets to discover mutable data associated with a token.
 
-In this specification, [IPFS](https://ipfs.io) is used for off-chain data storage. It should be understood that the intention is to for developers implementing this specification to upload that data to the Filecoin blockchain, and thereby make the data permanently available over IPFS. The easiest service to do this is [web3.storage](https://web3.storage).
+In this specification, [IPFS](https://ipfs.io) is used for off-chain data storage. It should be understood that the intention is for developers implementing this specification to upload that data to the Filecoin blockchain, and thereby make the data permanently available over IPFS. The easiest service to do this is [web3.storage](https://web3.storage).
 
 ## 2. Protocol Overview
 
@@ -46,17 +46,18 @@ Step two is optional. It allows the token creator to attach immutable (unchangea
 
 ## 3. Initialize the Mutable Data Address
 
-Mutable data is controlled by a key pair. Whomever controls the private key can update the mutable data. The output of this step is a TXID which can be included in the tokens `token_document_hash` field.
+Mutable data is controlled by a key pair (An address and a private key). Whomever controls the private key can update the mutable data. The output of this step is a TXID which can be included in the tokens `token_document_hash` field.
 
-- Generate a private/public key pair for controlling the mutable data (the *mutable data address*).
+- Generate a new private/public key pair for controlling the mutable data (the *mutable data address*).
 - Broadcast a transaction (from any address) with the following properties:
-  - The **first** output contains an OP_RETURN with a JSON containing an `msp` key with the value being the *mutable data address*.
+  - The **first** output contains an OP_RETURN with a JSON containing an `mda` key with the value being the *mutable data address*.
+    - Example: `{"mda": "bitcoincash:qrjptppjcqh3yvvrcxw5tat47rhvrladuvvkh6p5ed"}`
   - The **second** output contains an output going to the *mutable data address*.
 - The TXID from this transaction goes into the `token_document_hash` field of the new token.
 
-## 4. Create Immutable Data
+## 4. Create Immutable Data (Optional)
 
-This step is optional. It writes a [IPFS CID](https://proto.school/anatomy-of-a-cid/01) to the tokens `token_document_url` field. This field is often used to display a URL associated with the token, and is limited by the 223 bytes of the OP_RETURN. By moving that data to a JSON file linked by the CID, an unlimited amount of data can be captured, while retaining the immutable nature of the `token_document_url` field.
+This step is optional. It writes a [IPFS CID](https://proto.school/anatomy-of-a-cid/01) to the tokens `token_document_url` field. This field is often used to display a URL associated with the token, which is a limited amount of data. Moving that data to a JSON file, linked to the token by a CID, allows for unlimited data, while retaining the immutable nature of the `token_document_url` field.
 
 - Generate a JSON file containing any information that should be captured in the immutable data.
 - Upload the JSON object to IPFS, which results in a CID.
@@ -74,12 +75,12 @@ There is no change to the workflow described in the [SLP Token Specification](ht
 
 Updating mutable data should be executed at least once, immediately following the creation of the token, so that wallets can properly retrieve the data. However, the steps below can be executed at any time, to update the token to point to the latest data.
 
-The *mutable data address* must have some BCH to pay transaction fees. Updates not originating from the *mutable data address* are ignored. This prevents 'malicious updates' from other addresses. Only the owner of the *mutable data address* private key can update the mutable data.
+The *mutable data address* must have some BCH to pay transaction fees. Updates not originating from the *mutable data address* are ignored. This prevents malicious updates from other addresses. Only the owner of the *mutable data address* private key can update the mutable data.
 
 - Generate a JSON file and upload it to IPFS. This results in a CID.
 - Generate a transaction with the following properties:
-  - The **first input** must be spent from the *mutable data address* address.
-  - The **first output** must be an OP_RETURN containing JSON with a key value of `cid` and a value of the CID that can be retrieved over IPFS.
+  - The **first input** must be spent from the *mutable data address*.
+  - The **first output** must be an OP_RETURN containing JSON with a key value of `cid` and a value of the CID that can be retrieved over IPFS. Example:
 
 ```
 {
@@ -93,25 +94,27 @@ Reading mutable data is the process by which blockchain software (like [bch-api]
 
 - Given the `token ID` of the token, the Genesis data for the token is retrieved.
 - Get transaction data for the TXID in the `token_document_hash` field.
-- Get the *mutable data address* from the second output of the transaction data.
+- Get the *mutable data address* from the second output of the transaction data OR the OP_RETURN in the first output of the transaction.
 - Get the transaction history for the *mutable data address*. It should be in chronological order with the newest TX first.
 - Traverse the transaction history until a TX with the following properties are found:
-  - First input is spent by the *mutable data address* address.
-  - First output is OP_RETURN containing JSON with a `cid` property.
+  - First input is spent by the *mutable data address*.
+  - First output is an OP_RETURN containing JSON with a `cid` property.
 - Retrieve the JSON object from IPFS using the CID.
 
 ## 8. Mutable Data Recommendations
 
-The mutable data pointed can be any kind of arbitrary data, however [JSON-LD](https://json-ld.org/) formatted Linked Data following the [Schema.org](https://schema.org/) schema is recommended. Here is an example of what a token icon might look like:
+The mutable data can be any kind of arbitrary data, however [JSON-LD](https://json-ld.org/) formatted Linked Data following the [Schema.org](https://schema.org/) schema is recommended. Here is an example of what a token icon might look like:
 
 ```
 {
-  "@context": "https://schema.org",
-  "@type": "ImageObject",
-  "author": "Chris Troutner",
-  "contentUrl": "https://hub.textile.io/ipfs/bafkreiasjlveyusmkgludz6vopzg5t5g3lefgtu5oudoawjrcttmgwjea4",
-  "datePublished": "2021-05-20",
-  "description": "PSF Logo",
-  "name": "psf-logo.png"
+  "tokenIcon": {
+    "@context": "https://schema.org",
+    "@type": "ImageObject",
+    "author": "Chris Troutner",
+    "contentUrl": "https://hub.textile.io/ipfs/bafkreiasjlveyusmkgludz6vopzg5t5g3lefgtu5oudoawjrcttmgwjea4",
+    "datePublished": "2021-05-20",
+    "description": "PSF Logo",
+    "name": "psf-logo.png"
+  }
 }
 ```
