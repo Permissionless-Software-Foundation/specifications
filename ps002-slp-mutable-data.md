@@ -51,6 +51,7 @@ Mutable data is controlled by a key pair (An address and a private key). Whomeve
 - Generate a private/public key pair for controlling the mutable data (the *mutable data address*).
 - Broadcast a transaction (from any address) with the following properties:
   - The **first** output contains an OP_RETURN with a JSON containing an `mda` key with the value being the *mutable data address*.
+    - Example: `{"mda": "bitcoincash:qrjptppjcqh3yvvrcxw5tat47rhvrladuvvkh6p5ed"}`
   - The **second** output contains an output going to the *mutable data address*.
 - The TXID from this transaction goes into the `token_document_hash` field of the new token.
 
