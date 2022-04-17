@@ -31,7 +31,7 @@ Mutable data is controlled by a key pair. This specification is a general approa
 - Token creators to add mutable data at the time of token creation.
 - Wallets to discover mutable data associated with a token.
 
-In this specification, [IPFS](https://ipfs.io) is used for off-chain data storage. It should be understood that the intention is to for developers implementing this specification to upload that data to the Filecoin blockchain, and thereby make the data permanently available over IPFS. The easiest service to do this is [web3.storage](https://web3.storage).
+In this specification, [IPFS](https://ipfs.io) is used for off-chain data storage. It should be understood that the intention is for developers implementing this specification to upload that data to the Filecoin blockchain, and thereby make the data permanently available over IPFS. The easiest service to do this is [web3.storage](https://web3.storage).
 
 ## 2. Protocol Overview
 
@@ -46,11 +46,11 @@ Step two is optional. It allows the token creator to attach immutable (unchangea
 
 ## 3. Initialize the Mutable Data Address
 
-Mutable data is controlled by a key pair. Whomever controls the private key can update the mutable data. The output of this step is a TXID which can be included in the tokens `token_document_hash` field.
+Mutable data is controlled by a key pair (An address and a private key). Whomever controls the private key can update the mutable data. The output of this step is a TXID which can be included in the tokens `token_document_hash` field.
 
 - Generate a private/public key pair for controlling the mutable data (the *mutable data address*).
 - Broadcast a transaction (from any address) with the following properties:
-  - The **first** output contains an OP_RETURN with a JSON containing an `msp` key with the value being the *mutable data address*.
+  - The **first** output contains an OP_RETURN with a JSON containing an `mda` key with the value being the *mutable data address*.
   - The **second** output contains an output going to the *mutable data address*.
 - The TXID from this transaction goes into the `token_document_hash` field of the new token.
 
