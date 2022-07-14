@@ -1,4 +1,4 @@
-# Multisig Minting
+# Multisig Minting [DEPRECATED]
 
 ## Permissionless Software Foundation Specification 005 (PS005)
 
