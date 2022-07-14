@@ -8,3 +8,5 @@ This repository is used to track PSF Specification documents. These are specific
 - [PS003 - SLP JSON ID](./ps003-slp-json-id.md) - Inspired by the [Lokad ID](https://github.com/bitcoincashorg/bitcoincash.org/blob/master/spec/op_return-prefix-guideline.md), anyone can submit a PR to claim their `slpjsonid`. Wallets can download the [slpjsonid.csv file](./slpjsonid.csv) to decipher the JSON data uploaded via [PS002](./ps002-slp-mutable-data.md).
 
 - [PS004 - Collaborative CoinJoin](./ps004-collaborative-coinjoin.md) - A [CoinJoin protocol](https://en.bitcoin.it/wiki/CoinJoin) for achieving financial privacy when using Bitcoin **Cash**. The 'Cash' label implies that it is anonymous like physical cash is. Collaborative CoinJoin helps wallets achieve financial privacy without any central coordination server. It results in large, anonymous coins that do not suffer from [the 'dust' problem](https://academy.binance.com/en/articles/what-is-a-dusting-attack).
+
+- [PS006 - Simple Store Protocol (SSP)](./psf006=simple-store-protocol.md) - A protocol for creating Stores and Products that are difficult to censor.
