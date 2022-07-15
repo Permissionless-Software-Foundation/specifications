@@ -15,6 +15,7 @@ Chris Troutner
 ## Acknowledgments
 
 - This document builds on top of the [SLP NFT 1 Protocol](https://github.com/simpleledger/slp-specifications/blob/master/slp-nft-1.md).
+- This specification leverages the [Lokad ID](https://github.com/bitcoincashorg/bitcoincash.org/blob/master/spec/op_return-prefix-guideline.md). A [pull request](https://github.com/bitcoincashorg/bitcoincash.org/pull/690) to identify this protocol with Lokad ID `0x00504d00`.
 
 ## 1. Introduction
 
