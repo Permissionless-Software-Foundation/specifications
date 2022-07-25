@@ -21,19 +21,19 @@ Chris Troutner
 
 The Simple Store Protocol (SSP) describes data structures for representing stores, products, and reviews on Bitcoin blockchains, by leveraging the OP_RETURN field of a transaction.
 
-## 2. Brief Technical Summary
-
-- Stores are represented as Group Tokens as per the [SLP NFT 1 Protocol](https://github.com/simpleledger/slp-specifications/blob/master/slp-nft-1.md), which in turn makes use of the [Lokad ID specification](https://github.com/bitcoincashorg/bitcoincash.org/blob/master/spec/op_return-prefix-guideline.md).
-- Products within the Store are described in mutable data for the Store NFT by following [PS002 Mutable Data protocol](https://github.com/Permissionless-Software-Foundation/specifications/blob/master/ps002-slp-mutable-data.md). Entries follow a JSON Linked-Data format, and whenever possible leverage existing [schema.org](https://schema.org/) taxonomy.
-- *Claims* can represent store reviews, product reviews, metadata, or a Claim about other Claims. This is recorded in transactions, and also leverages the [Lokad ID specification](https://github.com/bitcoincashorg/bitcoincash.org/blob/master/spec/op_return-prefix-guideline.md).
-- An indexer similar to the [psf-slp-indexer](https://github.com/Permissionless-Software-Foundation/psf-slp-indexer) will be used to discover and track the above data as it is placed onto the blockchain.
-
-## 3. Definitions
+## 2. Definitions
 
 - **Stores** are the most fundamental data structure in the protocol. They represent an asset (like a business) which contains Products for sale. Their data structure is based on the [Store schema](https://schema.org/Store).
 - **Products** are items listed for sale by the Store. Their data structure is based on the [Product schema](https://schema.org/Product).
 - **Claims** are statements placed onto the blockchain, which are cryptographically signed by the originator. Claims can be product reviews, store reviews, metadata, or can refer to other Claims. Their data structure is based on the [Review schema](https://schema.org/Review)
 - **Customers** are users that purchase goods from a Store.
+
+## 3. Brief Technical Summary
+
+- Stores are represented as Group Tokens as per the [SLP NFT 1 Protocol](https://github.com/simpleledger/slp-specifications/blob/master/slp-nft-1.md), which in turn makes use of the [Lokad ID specification](https://github.com/bitcoincashorg/bitcoincash.org/blob/master/spec/op_return-prefix-guideline.md).
+- Products within the Store are described in mutable data for the Store NFT by following [PS002 Mutable Data protocol](https://github.com/Permissionless-Software-Foundation/specifications/blob/master/ps002-slp-mutable-data.md). Entries follow a JSON Linked-Data format, and whenever possible leverage existing [schema.org](https://schema.org/) taxonomy.
+- *Claims* can represent store reviews, product reviews, metadata, or a Claim about other Claims. This is recorded in transactions, and also leverages the [Lokad ID specification](https://github.com/bitcoincashorg/bitcoincash.org/blob/master/spec/op_return-prefix-guideline.md).
+- An indexer similar to the [psf-slp-indexer](https://github.com/Permissionless-Software-Foundation/psf-slp-indexer) will be used to discover and track the above data as it is placed onto the blockchain.
 
 ## 4. Stores
 
