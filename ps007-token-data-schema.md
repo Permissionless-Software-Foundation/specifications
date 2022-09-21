@@ -13,7 +13,7 @@
 Chris Troutner
 
 ## Introduction
-As adoption of the [PS002 specification for token mutable data](../ps002-slp-mutable-data.md) grows, there is a need to define a schema for this token data, to ensure that tokens will be inter-compatible with software across the industry. This specification document describes basic data structures that are recommended for use in token mutable data. It attempts to 'future proof' the schema by providing data fields where future growth can take place.
+As adoption of the [PS002 specification for token mutable data](../ps002-slp-mutable-data.md) grows, there is a need to define a schema for this token data, to ensure that tokens will be inter-compatible with software across the industry. This specification document describes basic data structures that are recommended for use in token data. It attempts to 'future proof' the schema by providing data fields where future growth can take place.
 
 ## Immutable Data
 Because the immutable data of the token can not be modified after token creation, the recommended data for this section is limited. Here is the recommended *minimum data* for the immutable data field:
@@ -41,13 +41,13 @@ The `dateCreated` property should be a date string in [ISO 8601](https://en.wiki
 The `userData` property is intended to 'future proof' this specification by allowing a field for users to place arbitrary data. If no data is provided, this property should resolve into an empty object (`{}`).
 
 ### jsonLd (required)
-The `jsonLd` property is another 'future proof' property. It's intended to capture [JSON-LD](https://json-ld.org/) structure data following [Schema.org](https://schema.org/) data. The recommended schema model is the [CreativeWork](https://schema.org/CreativeWork) model. If no JSON-LD data is desired, this property should resolve into an empty object (`{}`).
+The `jsonLd` property is another 'future proof' property. It's intended to capture [JSON-LD](https://json-ld.org/) structured data following [Schema.org](https://schema.org/) schema. The recommended schema model is the [CreativeWork](https://schema.org/CreativeWork) model. If no JSON-LD data is expressed, this property should resolve into an empty object (`{}`).
 
 ### issuer (optional)
-This property allows the software creating the token to declare the entity that has issued the token. This is different than the 'author', which should be captured in the `userData` property. This field is intended to reference the software (or organization that created the software) which created the token.
+This property allows the software creating the token to declare the entity that has issued the token. This is different than the 'author', which should be captured in the `userData` or `jsonLd` property. This field is intended to reference the software (or organization that created the software) which created the token.
 
 ### issuerUrl (optional)
-The `issuerUrl` allows the Issuer to add a URL to additional information about them.
+The `issuerUrl` allows the Issuer to add a URL for additional information about them.
 
 ## Mutable Data
 Because the mutable data field of a token can change over time, the risks are much lower in specifying schema, and the data can be much more expressive. The properties listed below are an example of the *minimal* amount of data that is recommended for creating a token.
@@ -66,7 +66,7 @@ Because the mutable data field of a token can change over time, the risks are mu
 ```
 
 ### schema (required)
-The `schema` property indicates the version of this specification that the token data follows. This allows software to know how to process the rest of the data. For that reason, this field is required. Note that it is OK for the mutable data to specify a different version than the immutable data. Since mutable data can change over time, it's anticipated that data will be updated over time to reflect changes to this specification.
+The `schema` property indicates the version of this specification that the token data follows. This allows software to know how to process the rest of the data. For that reason, this field is required. Note that it is OK for the mutable data to specify a different version than the immutable data. Since mutable data can change over time, it's anticipated that both the data and schema version will be updated over time to reflect changes to this specification.
 
 ### tokenIcon (required)
 Tokens are generally expected to have a visual icon associated with them. For that reason, this field is required. However, if the issuer does not want to associate an icon with the token, this field can resolve into an empty string (`""`).
@@ -83,7 +83,7 @@ Most display software will also incorporate collective moderation, allowing user
 The `userData` property is intended to 'future proof' this specification by allowing a field for users to place arbitrary data. If no data is provided, this property should resolve into an empty object (`{}`).
 
 ### jsonLd (required)
-The `jsonLd` property is another 'future proof' property. It's intended to capture [JSON-LD](https://json-ld.org/) structure data following [Schema.org](https://schema.org/) data. The recommended schema model is the [CreativeWork](https://schema.org/CreativeWork) model. If no JSON-LD data is desired, this property should resolve into an empty object (`{}`).
+The `jsonLd` property is another 'future proof' property. It is intended to capture [JSON-LD](https://json-ld.org/) structured data following [Schema.org](https://schema.org/) schema. The recommended schema model is the [CreativeWork](https://schema.org/CreativeWork) model. If no JSON-LD data is desired, this property should resolve into an empty object (`{}`).
 
 ### category (optional)
 The `category` property should contain a string of data. This is optional data, and when provided, can be used by the display software to easily categorize the token. If not used, this property should resolves to an empty string (`""`).
