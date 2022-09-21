@@ -60,6 +60,7 @@ Because the mutable data field of a token can change over time, the risks are mu
   "nsfw": false,
   "userData": {},
   "jsonLd": {},
+  "about": "This is a short sentence about the token",
   "category": "art",
   "tags": ["logo", "psf", "software"],
 }
@@ -84,6 +85,9 @@ The `userData` property is intended to 'future proof' this specification by allo
 
 ### jsonLd (required)
 The `jsonLd` property is another 'future proof' property. It is intended to capture [JSON-LD](https://json-ld.org/) structured data following [Schema.org](https://schema.org/) schema. The recommended schema model is the [CreativeWork](https://schema.org/CreativeWork) model. If no JSON-LD data is desired, this property should resolve into an empty object (`{}`).
+
+### about (optional)
+The `about` property should contain a string of human-readable information, to help people quickly grasp the context of the token. This is optional data. If not used, this property should resolve to an empty string (`""`).
 
 ### category (optional)
 The `category` property should contain a string of data. This is optional data, and when provided, can be used by the display software to easily categorize the token. If not used, this property should resolves to an empty string (`""`).
