@@ -1,4 +1,4 @@
-# SLP JSON ID
+# SLP JSON ID (DRAFT)
 ## Permissionless Software Foundation Specification 003 (PS003)
 
 ### Specification version: 1.0.0
