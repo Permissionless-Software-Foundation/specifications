@@ -10,3 +10,5 @@ This repository is used to track PSF Specification documents. These are specific
 - [PS004 - Collaborative CoinJoin](./ps004-collaborative-coinjoin.md) - A [CoinJoin protocol](https://en.bitcoin.it/wiki/CoinJoin) for achieving financial privacy when using Bitcoin **Cash**. The 'Cash' label implies that it is anonymous like physical cash is. Collaborative CoinJoin helps wallets achieve financial privacy without any central coordination server. It results in large, anonymous coins that do not suffer from [the 'dust' problem](https://academy.binance.com/en/articles/what-is-a-dusting-attack).
 
 - [PS006 - Simple Store Protocol (SSP)](./ps006-simple-store-protocol.md) - A protocol for creating Stores and Products that are difficult to censor.
+
+- [PS007 - Token Data Schema](./ps007-token-data-schema.md) - A guide to creating immutable and mutable data for tokens.
