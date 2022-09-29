@@ -10,7 +10,7 @@
 
 ## Authors
 
-Chris Troutner
+Chris Troutner, Aaron Shoemaker, Aaron Sundman, Stoyan Zhekov
 
 ## Introduction
 As adoption of the [PS002 specification for token mutable data](../ps002-slp-mutable-data.md) grows, there is a need to define a schema for this token data, to ensure that tokens will be inter-compatible with software across the industry. This specification document describes basic data structures that are recommended for use in token data. It attempts to 'future proof' the schema by providing data fields where future growth can take place.
@@ -81,7 +81,7 @@ Tokens are generally expected to have a visual icon associated with them. For th
 ### fullSizedUrl (required)
 Tokens are often used to represent rich media such as videos, 3D-objects, or high-resolution images. It is not appropriate to use this media as the token icon, because the large size of the data will create a poor user experience when viewing the token in a wallet. The `fullSizedUrl` field is used to link to this large-data resource. If not used, it should resolve into an empty string (`""`).
 
-This property can also be an object, so that it can communicate links to various platforms where the content can be found. If expressed as an object, the object should contain a `default` field at a minimum, which provides views a 'default' URL to express. Here is an example:
+This property can also be an object, so that it can communicate links to various platforms where the content can be found. If expressed as an object, the object should contain a `default` field at a minimum, which provides a default link to the content. Here is an example:
 
 ```json
 {
@@ -116,10 +116,10 @@ The `about` property should contain a string of human-readable information, to h
 The `category` property should contain a string of data. This is optional data, and when provided, can be used by the display software to easily categorize the token. If not used, this property should resolves to an empty string (`""`).
 
 ### tags (optional)
-The `tags` property should contain an array of strings. This is optional data, and when provided, can be used by the display software to associate it with other tokens. If not used, this property should resolves to an empty string (`""`).
+The `tags` property should contain an array of strings. This is optional data, and when provided, can be used by the display software to associate it with other tokens. If not used, this property should resolves to an empty array (`[]`).
 
 ### medaiType (optional)
-This is a string describing the type of media the token represents. Here are common formats:
+This is a string describing the type of media the token represents. If not used, this property should resolve to an empty string (`""`). The purpose of this field is to make it easier for viewer software to automatically determine the type of software required to render the data represented by the token. Here are common formats:
 - `image`
 - `audio`
 - `video`
@@ -127,7 +127,7 @@ This is a string describing the type of media the token represents. Here are com
 - `3d`
 
 ### currentOwner (optional)
-The `currentOwner` property is an object that contains information about the current owner of the token. This field is provided to allow the token creator to update the ownership information as the token changes hands. This provides leverage for token creators to enforce their license terms.
+The `currentOwner` property is an object that contains information about the current owner of the token. This field is provided to allow the token creator to update the ownership information as the token changes hands in the secondary market. This provides leverage for token creators to enforce their license terms.
 
 If this field is not used, it should be expressed as an empty object (`{}`). Here is an example of how current ownership could be expressed:
 
