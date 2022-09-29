@@ -118,12 +118,13 @@ The `category` property should contain a string of data. This is optional data, 
 ### tags (optional)
 The `tags` property should contain an array of strings. This is optional data, and when provided, can be used by the display software to associate it with other tokens. If not used, this property should resolves to an empty array (`[]`).
 
-### medaiType (optional)
+### mediaType (optional)
 This is a string describing the type of media the token represents. If not used, this property should resolve to an empty string (`""`). The purpose of this field is to make it easier for viewer software to automatically determine the type of software required to render the data represented by the token. Here are common formats:
 - `image`
 - `audio`
 - `video`
 - `text`
+- `html`
 - `3d`
 
 ### currentOwner (optional)
