@@ -2,11 +2,11 @@
 
 ## Permissionless Software Foundation Specification 007 (PS007)
 
-### Specification version: 1.0.1
+### Specification version: 1.0.2
 
 ### Date originally published: September 21, 2022
 
-### Date last updated: September 29, 2022
+### Date last updated: October 4, 2022
 
 ## Authors
 
@@ -76,12 +76,21 @@ Because the mutable data field of a token can change over time, the risks are mu
 The `schema` property indicates the version of this specification that the token data follows. This allows software to know how to process the rest of the data. For that reason, this field is required. Note that it is OK for the mutable data to specify a different version than the immutable data. Since mutable data can change over time, it's anticipated that both the data and schema version will be updated over time to reflect changes to this specification.
 
 ### tokenIcon (required)
-Tokens are generally expected to have a visual icon associated with them. For that reason, this field is required. However, if the issuer does not want to associate an icon with the token, this field can resolve into an empty string (`""`).
+Tokens are generally expected to have a visual icon associated with them. For that reason, this field is required. However, if the issuer does not want to associate an icon with the token, this field can resolve into an empty string (`""`). This property should be either a string or an object. In the case of a string, it should be a URL to the icon image.
+
+If this property is an object, it can communicate links to various platforms where the content can be found. If expressed as an object, the object should contain a `default` field at a minimum, which provides a default link to the content.
+
+A second property `ipfs` is optional but highly recommended. This allows the viewer software to determine it's own IPFS Gateway URL for retrieving the content. This can lead to a better user experience since the data can be cached, handled, and optimized by the viewer software. See the `fullSizedUrl` section below for examples.
+
 
 ### fullSizedUrl (required)
 Tokens are often used to represent rich media such as videos, 3D-objects, or high-resolution images. It is not appropriate to use this media as the token icon, because the large size of the data will create a poor user experience when viewing the token in a wallet. The `fullSizedUrl` field is used to link to this large-data resource. If not used, it should resolve into an empty string (`""`).
 
-This property can also be an object, so that it can communicate links to various platforms where the content can be found. If expressed as an object, the object should contain a `default` field at a minimum, which provides a default link to the content. Here is an example:
+This property can also be an object, so that it can communicate links to various platforms where the content can be found. If expressed as an object, the object should contain a `default` field at a minimum, which provides a default link to the content.
+
+A second property `ipfs` is optional but highly recommended. This allows the viewer software to determine it's own IPFS Gateway URL for retrieving the content. This can lead to a better user experience since the data can be cached, handled, and optimized by the viewer software.
+
+Here is an example:
 
 ```json
 {
