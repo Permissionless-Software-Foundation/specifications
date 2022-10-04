@@ -78,7 +78,7 @@ The `schema` property indicates the version of this specification that the token
 ### tokenIcon (required)
 Tokens are generally expected to have a visual icon associated with them. For that reason, this field is required. However, if the issuer does not want to associate an icon with the token, this field can resolve into an empty string (`""`). This property should be either a string or an object. In the case of a string, it should be a URL to the icon image.
 
-If this property is an object, it can communicate links to various platforms where the content can be found. If expressed as an object, the object should contain a `default` field at a minimum, which provides a default link to the content.
+If this property is an object, it can communicate links to various platforms where the content can be found. The object should contain a `default` field at a minimum, which provides a default link to the content.
 
 A second property `ipfs` is optional but highly recommended. This allows the viewer software to determine it's own IPFS Gateway URL for retrieving the content. This can lead to a better user experience since the data can be cached, handled, and optimized by the viewer software. See the `fullSizedUrl` section below for examples.
 
