@@ -83,8 +83,8 @@ The *mutable data address* must have some BCH to pay transaction fees. Updates n
 - Generate a transaction with the following properties:
   - The **first input** must be spent from the *mutable data address*.
   - The **first output** must be an OP_RETURN containing JSON with the following key-value pairs:
-    - A key value of `cid` and a value of the CID that can be retrieved over IPFS
-    - A key value of `ts` (for *timestamp*) and a value containing a number representing a [JavaScript date](https://www.w3schools.com/jsref/jsref_gettime.asp)
+    - A key of `cid` and a value of the CID representing JSON data that can be retrieved over IPFS.
+    - A key of `ts` (for *timestamp*) and a value containing a number representing a [JavaScript date](https://www.w3schools.com/jsref/jsref_gettime.asp).
 
 Example:
 ```
@@ -93,6 +93,8 @@ Example:
   "ts": 1665768143885
 }
 ```
+
+The timestamp is used to sort multiple entries within the same block. Block height is used to determine the most recent update of the mutable data. But if multiple entries make it into the same block, then the timestamp is used to sort the entries within that block. The most recent update is used as the current data.
 
 ## 7. Reading Mutable Data
 
