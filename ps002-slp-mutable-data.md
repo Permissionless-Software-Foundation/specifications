@@ -107,22 +107,9 @@ Reading mutable data is the process by which blockchain software (like [bch-api]
 - Traverse the transaction history until a TX with the following properties are found:
   - First input is spent by the *mutable data address*.
   - First output is an OP_RETURN containing JSON with a `cid` property.
+  - If multiple TXs are found with the same block height, look for a timestamp in the `ts` property and use the biggest (most recent) timestamp.
 - Retrieve the JSON object from IPFS using the CID.
 
 ## 8. Mutable Data Recommendations
 
-The mutable data can be any kind of arbitrary data, however [JSON-LD](https://json-ld.org/) formatted Linked Data following the [Schema.org](https://schema.org/) schema is recommended. Here is an example of what a token icon might look like:
-
-```
-{
-  "tokenIcon": {
-    "@context": "https://schema.org",
-    "@type": "ImageObject",
-    "author": "Chris Troutner",
-    "contentUrl": "https://hub.textile.io/ipfs/bafkreiasjlveyusmkgludz6vopzg5t5g3lefgtu5oudoawjrcttmgwjea4",
-    "datePublished": "2021-05-20",
-    "description": "PSF Logo",
-    "name": "psf-logo.png"
-  }
-}
-```
+The mutable data can be any kind of arbitrary data, however [PS007](https://github.com/Permissionless-Software-Foundation/specifications/blob/ct-unstable/ps007-token-data-schema.md) specifies a schema that wallets can use to ingest standardized data. It is strongly recommended that wallet software conform to the PS007 specification for mutable and immutable data.
