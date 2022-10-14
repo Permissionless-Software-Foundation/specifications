@@ -112,4 +112,4 @@ Reading mutable data is the process by which blockchain software (like [bch-api]
 
 ## 8. Mutable Data Recommendations
 
-The mutable data can be any kind of arbitrary data, however [PS007](https://github.com/Permissionless-Software-Foundation/specifications/blob/ct-unstable/ps007-token-data-schema.md) specifies a schema that wallets can use to ingest standardized data. It is strongly recommended that wallet software conform to the PS007 specification for mutable and immutable data.
+The mutable data can be any kind of arbitrary data, however [PS007](https://github.com/Permissionless-Software-Foundation/specifications/blob/master/ps007-token-data-schema.md) specifies a schema that wallets can use to ingest standardized data. It is strongly recommended that wallet software conform to the PS007 specification for mutable and immutable data.
