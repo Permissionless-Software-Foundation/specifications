@@ -2,11 +2,11 @@
 
 ## Permissionless Software Foundation Specification 002 (PS002)
 
-### Specification version: 1.1.0
+### Specification version: 1.2.0
 
 ### Date originally published: July 20, 2020
 
-### Date last updated: April 17, 2022
+### Date last updated: October 14, 2022
 
 ## Authors
 
@@ -17,6 +17,8 @@ Chris Troutner
 - This document builds on top of the [SLP Token Type 1 Protocol](https://github.com/simpleledger/slp-specifications/blob/master/slp-token-type-1.md).
 
 ## 1. Introduction
+
+This specification has been implemented in the [slp-mutable-data](https://www.npmjs.com/package/slp-mutable-data) npm library.
 
 The Simple Ledger Protocol (SLP) for tokens includes a `token_document_hash` field in the [specification for the Genesis transaction](https://github.com/simpleledger/slp-specifications/blob/master/slp-token-type-1.md#genesis---token-genesis-transaction). This field is intended to hold a TXID for a Bitcoin Cash transaction. This TXID was originally intended to point to an on-chain file uploaded with the [Bitcoin Files Specification](https://github.com/simpleledger/slp-specifications/blob/master/bitcoinfiles.md), but can be used with any arbitrary BCH transaction.
 
@@ -80,11 +82,15 @@ The *mutable data address* must have some BCH to pay transaction fees. Updates n
 - Generate a JSON file and upload it to IPFS. This results in a CID.
 - Generate a transaction with the following properties:
   - The **first input** must be spent from the *mutable data address*.
-  - The **first output** must be an OP_RETURN containing JSON with a key value of `cid` and a value of the CID that can be retrieved over IPFS. Example:
+  - The **first output** must be an OP_RETURN containing JSON with the following key-value pairs:
+    - A key value of `cid` and a value of the CID that can be retrieved over IPFS
+    - A key value of `ts` (for *timestamp*) and a value containing a number representing a [JavaScript date](https://www.w3schools.com/jsref/jsref_gettime.asp)
 
+Example:
 ```
 {
-  "cid": "ipfs://QmTu6DWuAdq36EZQHGs1QDhSJBpbZYcpcbGH9S42tNB1aX"
+  "cid": "ipfs://QmTu6DWuAdq36EZQHGs1QDhSJBpbZYcpcbGH9S42tNB1aX",
+  "ts": 1665768143885
 }
 ```
 
