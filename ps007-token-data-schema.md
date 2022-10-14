@@ -2,7 +2,7 @@
 
 ## Permissionless Software Foundation Specification 007 (PS007)
 
-### Specification version: 1.0.2
+### Specification version: 1.0.3
 
 ### Date originally published: September 21, 2022
 
@@ -80,7 +80,7 @@ Tokens are generally expected to have a visual icon associated with them. For th
 
 If this property is an object, it can communicate links to various platforms where the content can be found. The object *must* contain a `default` field at a minimum, which provides a default link to the content.
 
-A second property `ipfs` is optional but highly recommended. This allows the viewer software to determine it's own IPFS Gateway URL for retrieving the content. This can lead to a better user experience since the data can be cached, handled, and optimized by the viewer software. See the `fullSizedUrl` section below for examples.
+A second property `ipfs` is optional but highly recommended. This allows the viewer software to determine it's own IPFS Gateway URL for retrieving the content. This can lead to a better user experience since the data can be cached, handled, and optimized by the viewer software. This property must be an object with two properties: `cid` for the content ID (CID), and `path`, which is the path within the CID to resolve the media. See the `fullSizedUrl` section below for examples.
 
 
 ### fullSizedUrl (required)
@@ -88,7 +88,7 @@ Tokens are often used to represent rich media such as videos, 3D-objects, or hig
 
 This property can also be an object, so that it can communicate links to various platforms where the content can be found. If expressed as an object, the object *must* contain a `default` property at a minimum, which provides a default link to the content.
 
-A second property `ipfs` is optional but highly recommended. This allows the viewer software to determine it's own IPFS Gateway URL for retrieving the content. This can lead to a better user experience since the data can be cached, handled, and optimized by the viewer software.
+A second property `ipfs` is optional but highly recommended. This allows the viewer software to determine it's own IPFS Gateway URL for retrieving the content. This can lead to a better user experience since the data can be cached, handled, and optimized by the viewer software. This property must be an object with two properties: `cid` for the content ID (CID), and `path`, which is the path within the CID to resolve the media.
 
 Here is an example:
 
@@ -101,7 +101,10 @@ Here is an example:
     "rumble": "https://rumble.com/v14yior-introduction-to-nfts-on-bch.html",
     "odysee": "https://odysee.com/@trout:5/introduction-to-nfts-on-bch:1",
     "lbry": "lbry://@trout#5/introduction-to-nfts-on-bch#1",
-    "ipfs": "bafybeif3emr4immcvvco2y5tlav7jtfdvoescj5vaelqwbz6scdfzj4oka",
+    "ipfs": {
+      "cid": "bafybeif3emr4immcvvco2y5tlav7jtfdvoescj5vaelqwbz6scdfzj4oka",
+      "path": "/video1352867031.mp4"
+    },
     "filecoin": "https://bafybeif3emr4immcvvco2y5tlav7jtfdvoescj5vaelqwbz6scdfzj4oka.ipfs.dweb.link/video1352867031.mp4"
   }
 }

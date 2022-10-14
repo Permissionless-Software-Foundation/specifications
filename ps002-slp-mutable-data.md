@@ -2,11 +2,11 @@
 
 ## Permissionless Software Foundation Specification 002 (PS002)
 
-### Specification version: 1.1.0
+### Specification version: 1.2.0
 
 ### Date originally published: July 20, 2020
 
-### Date last updated: April 17, 2022
+### Date last updated: October 14, 2022
 
 ## Authors
 
@@ -17,6 +17,8 @@ Chris Troutner
 - This document builds on top of the [SLP Token Type 1 Protocol](https://github.com/simpleledger/slp-specifications/blob/master/slp-token-type-1.md).
 
 ## 1. Introduction
+
+This specification has been implemented in the [slp-mutable-data](https://www.npmjs.com/package/slp-mutable-data) npm library.
 
 The Simple Ledger Protocol (SLP) for tokens includes a `token_document_hash` field in the [specification for the Genesis transaction](https://github.com/simpleledger/slp-specifications/blob/master/slp-token-type-1.md#genesis---token-genesis-transaction). This field is intended to hold a TXID for a Bitcoin Cash transaction. This TXID was originally intended to point to an on-chain file uploaded with the [Bitcoin Files Specification](https://github.com/simpleledger/slp-specifications/blob/master/bitcoinfiles.md), but can be used with any arbitrary BCH transaction.
 
@@ -80,13 +82,19 @@ The *mutable data address* must have some BCH to pay transaction fees. Updates n
 - Generate a JSON file and upload it to IPFS. This results in a CID.
 - Generate a transaction with the following properties:
   - The **first input** must be spent from the *mutable data address*.
-  - The **first output** must be an OP_RETURN containing JSON with a key value of `cid` and a value of the CID that can be retrieved over IPFS. Example:
+  - The **first output** must be an OP_RETURN containing JSON with the following key-value pairs:
+    - A key of `cid` and a value of the CID representing JSON data that can be retrieved over IPFS.
+    - A key of `ts` (for *timestamp*) and a value containing a number representing a [JavaScript date](https://www.w3schools.com/jsref/jsref_gettime.asp).
 
+Example:
 ```
 {
-  "cid": "ipfs://QmTu6DWuAdq36EZQHGs1QDhSJBpbZYcpcbGH9S42tNB1aX"
+  "cid": "ipfs://QmTu6DWuAdq36EZQHGs1QDhSJBpbZYcpcbGH9S42tNB1aX",
+  "ts": 1665768143885
 }
 ```
+
+The timestamp is used to sort multiple entries within the same block. Block height is used to determine the most recent update of the mutable data. But if multiple entries make it into the same block, then the timestamp is used to sort the entries within that block. The most recent update is used as the current data.
 
 ## 7. Reading Mutable Data
 
@@ -99,22 +107,9 @@ Reading mutable data is the process by which blockchain software (like [bch-api]
 - Traverse the transaction history until a TX with the following properties are found:
   - First input is spent by the *mutable data address*.
   - First output is an OP_RETURN containing JSON with a `cid` property.
+  - If multiple TXs are found with the same block height, look for a timestamp in the `ts` property and use the biggest (most recent) timestamp.
 - Retrieve the JSON object from IPFS using the CID.
 
 ## 8. Mutable Data Recommendations
 
-The mutable data can be any kind of arbitrary data, however [JSON-LD](https://json-ld.org/) formatted Linked Data following the [Schema.org](https://schema.org/) schema is recommended. Here is an example of what a token icon might look like:
-
-```
-{
-  "tokenIcon": {
-    "@context": "https://schema.org",
-    "@type": "ImageObject",
-    "author": "Chris Troutner",
-    "contentUrl": "https://hub.textile.io/ipfs/bafkreiasjlveyusmkgludz6vopzg5t5g3lefgtu5oudoawjrcttmgwjea4",
-    "datePublished": "2021-05-20",
-    "description": "PSF Logo",
-    "name": "psf-logo.png"
-  }
-}
-```
+The mutable data can be any kind of arbitrary data, however [PS007](https://github.com/Permissionless-Software-Foundation/specifications/blob/master/ps007-token-data-schema.md) specifies a schema that wallets can use to ingest standardized data. It is strongly recommended that wallet software conform to the PS007 specification for mutable and immutable data.
