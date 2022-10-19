@@ -6,7 +6,7 @@
 
 ### Date originally published: September 22, 2020
 
-### Date last updated: May 20, 2021
+### Date last updated: Oct 19, 2022
 
 ## Authors
 
@@ -14,17 +14,17 @@ Chris Troutner
 
 ## 1. Introduction
 
-[CashShuffle](https://cashshuffle.com/) and [CashFusion](https://cashfusion.org/) are popular [CoinJoin](https://en.bitcoin.it/wiki/CoinJoin) protocols on the Bitcoin Cash network. But they are complex and as a result have only been implemented in a single wallet ([Electron Cash](https://electroncash.org/)). A more general-purpose approach to generating CoinJoin transactions and coordinating wallets is desirable in order to allow wild innovation and integration into many wallets. This document describes the orchestration of a handful of JavaScript npm libraries that can be used to create that general-purpose approach.
+[CashShuffle](https://cashshuffle.com/) and [CashFusion](https://cashfusion.org/) are popular [CoinJoin](https://en.bitcoin.it/wiki/CoinJoin) protocols on the Bitcoin Cash network. But they are complex, and as a result have only been implemented in a single wallet ([Electron Cash](https://electroncash.org/)). A more general-purpose approach to generating CoinJoin transactions and coordinating wallets is desirable in order to allow wild innovation and integration into many wallets. This document describes the orchestration of a handful of JavaScript npm libraries that can be used to create that general-purpose approach.
 
 ## 2. Component Parts
 
 On the surface, a CoinJoin transaction is not a difficult or unusual type of Bitcoin transaction. The hard part is the coordination and communication of wallets, as several wallets need to coordinate synchronously in order to generate and broadcast a CoinJoin transaction.
 
-The Collaborative CoinJoin protocol specified in this document is based on [this CoinJoin example](https://github.com/Permissionless-Software-Foundation/bch-js-examples/tree/master/applications/collaborate/coinjoin). However, examples of how to generate a collaborative CoinJoin transaction is only one piece of the solution. A way to securely communicate, and a protocol for coordination, is also required.
+The Collaborative CoinJoin protocol specified in this document is based on [this CoinJoin example](https://github.com/Permissionless-Software-Foundation/bch-js-examples/tree/master/bch/applications/collaborate/coinjoin). However, examples of how to generate a collaborative CoinJoin transaction is only one piece of the solution. A way to securely communicate, and a protocol for coordination, is also required.
 
 For secure communication, the [bch-encrypt-lib](https://github.com/Permissionless-Software-Foundation/bch-encrypt-lib) can be used. This is a JavaScript npm library that contains utility functions for end-to-end (e2e) encryption of messages using the same elliptic curve encryption that Bitcoin is based upon.
 
-For coordination the [IPFS](https://ipfs.io) network will be used, specifically the pubsub features that allow IPFS nodes to subscribe to channels and receive published messages. The [ipfs-coord](https://github.com/Permissionless-Software-Foundation/ipfs-coord) library was specifically designed for the type of coordination needed for this application. A demo of the library can be interacted with at [chat.fullstack.cash](https://chat.fullstack.cash), and the technology behind it is documented in a [series of blog posts and YouTube videos](https://troutsblog.com/blog/). This provides the foundation for the coordination and communication required to organize CoinJoin transactions between wallets.
+For coordination the [IPFS](https://ipfs.io) network will be used, specifically the pubsub features that allow IPFS nodes to subscribe to channels and receive published messages. The [ipfs-coord](https://github.com/Permissionless-Software-Foundation/ipfs-coord) library was specifically designed for the type of coordination needed for this application. The technology is documented at [CashStack.info](https://cashstack.info). This provides the foundation for the coordination and communication required to organize CoinJoin transactions between wallets.
 
 ## 3. Base Coordination
 
