@@ -14,7 +14,7 @@ Chris Troutner
 
 ## 1. Introduction
 
-[CashShuffle](https://cashshuffle.com/) and [CashFusion](https://cashfusion.org/) are popular [CoinJoin](https://en.bitcoin.it/wiki/CoinJoin) protocols on the Bitcoin Cash network. But they are complex, and as a result have only been implemented in a single wallet ([Electron Cash](https://electroncash.org/)). A more general-purpose approach to generating CoinJoin transactions and coordinating wallets is desirable in order to allow wild innovation and integration into many wallets. This document describes the orchestration of a handful of JavaScript npm libraries that can be used to create that general-purpose approach.
+[CashShuffle](https://cashshuffle.com/) and [CashFusion](https://cashfusion.org/) are popular [CoinJoin](https://en.bitcoin.it/wiki/CoinJoin) protocols on the Bitcoin Cash network. But they are complex, and as a result have only been implemented in a single wallet ([Electron Cash](https://electroncash.org/)). A more general-purpose approach to generating CoinJoin transactions and coordinating wallets is desirable in order to allow integration into many wallets. This document describes the orchestration of a handful of JavaScript npm libraries that can be used to create that general-purpose approach.
 
 ## 2. Component Parts
 
