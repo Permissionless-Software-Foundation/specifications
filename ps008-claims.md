@@ -1,6 +1,6 @@
 # Claims
 
-## Permissionless Software Foundation Specification 006 (PS006)
+## Permissionless Software Foundation Specification 008 (PS008)
 
 ### Specification version: 1.0.0
 
@@ -46,7 +46,7 @@ The claim is split into 'chunks', separated by spaces above. Here is the breakdo
 - 0x00504d00 is the Lokad ID for SSP
 - 0x0000 is a 2-byte prefix, which can be used to expand this protocol in the future.
 - [7ce786b1b975c53c474764ca136f60bcf9dd438a1d0c01d94821f804c7b09749](https://token.fullstack.cash/?tokenid=7ce786b1b975c53c474764ca136f60bcf9dd438a1d0c01d94821f804c7b09749) is the token ID for the token.
-- [ipfs://bafybeif253afapbm23cq5mujt4pw2mb22lijwppgu57o2obqms5z2x54lu](https://bafybeif253afapbm23cq5mujt4pw2mb22lijwppgu57o2obqms5z2x54lu.ipfs.dweb.link/data.json) - is JSON data containing the Claim information, stored on the IPFS network.
+- [ipfs://bafybeif253afapbm23cq5mujt4pw2mb22lijwppgu57o2obqms5z2x54lu](https://bafybeif253afapbm23cq5mujt4pw2mb22lijwppgu57o2obqms5z2x54lu.ipfs.dweb.link/data.json) - is JSON data containing the Claim information, stored on the [IPFS](https://ipfs.io) network.
 
 
 ### 2.1.2 Example for making a Claim about another Claim:
@@ -63,7 +63,7 @@ The claim takes the same format, but has slightly different context:
 
 ## 3. Data Storage
 
-This section defines the prefixes and data storage used by Claims.
+This section defines the prefixes and data storage used by Claims. Claim data can be stored on any of the networks defined below.
 
 - The `ipfs://` prefix indicates that the data is stored on the IPFS network and is referenced by a [CID](https://docs.ipfs.tech/concepts/content-addressing/). This data should be able to be retrieved through any public IPFS gateway.
 - The `p2wdb://` prefix indicates that the data can be retrieved from the [pay-to-write database (P2WDB)](https://p2wdb.com). These also use a CID, which starts with the letter 'z'. These are [OrbitDB](https://github.com/orbitdb/orbit-db) CIDs. The data can be retrieved from any instance of the P2WDB.
