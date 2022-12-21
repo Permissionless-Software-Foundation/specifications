@@ -19,9 +19,9 @@ Chris Troutner
 
 ## 1. Introduction
 
-**Claims** are statements placed onto the blockchain, which are cryptographically signed by the originator. Claims can be product reviews, store reviews, metadata, or can refer to other Claims. Their data structure is based on the [Review schema](https://schema.org/Review).
+**Claims** are statements placed onto the blockchain, which are cryptographically signed by the originator. Claims can be reviews, certification badges, metadata, or can refer to other Claims. Their data structure is based on the [Review schema](https://schema.org/Review).
 
-Claims always refer to a Token, or to another Claim. Claims are a way to leave on-chain metadata about Tokens (or other Claims).
+Claims *always and only* refer to a Token, or to another Claim. Claims are a way to leave on-chain metadata about Tokens (or other Claims).
 
 ## 2. Claims
 
@@ -30,10 +30,10 @@ Claims are primarily used to leave reviews or comments about a [SLP token](https
 Claims are not tokens. Instead they are transactions on the blockchain that leverage the [Lokad ID specification](https://github.com/bitcoincashorg/bitcoincash.org/blob/master/spec/op_return-prefix-guideline.md). Because they are transactions, they are cryptographically signed by the owner of a Bitcoin address ([nonrepudiation](https://www.techtarget.com/searchsecurity/definition/nonrepudiation)), and once created, they immutable and uncensorable. Claims provide rich metadata and social history for tokens.
 
 ### 2.1 Claim Examples
-The protocol for generating a Claim within is inspired by the [Simple Ledger Protocol](https://github.com/simpleledger/slp-specifications/blob/master/slp-token-type-1.md) and the [memo.cash protocol](https://memo.cash/protocol):
+The protocol for generating a Claim is inspired by the [Simple Ledger Protocol](https://github.com/simpleledger/slp-specifications/blob/master/slp-token-type-1.md) and the [memo.cash protocol](https://memo.cash/protocol):
 
 - The protocol uses P2PKH addresses. Actions are saved using OP_RETURN.
-- Message data is UTF-8 encoded, with the exception of the Lokad ID prefix of 0x00504d00 (hex)
+- Message data is UTF-8 encoded, with the exception of the Lokad ID prefix (0x00504d00) and 2-byte prefix (0x0000), which are both hex-encoded.
 - OP_RETURN outputs *must be* the **first** output in the transaction.
 
 ### 2.1.1 Example for making a Claim about a Token:
@@ -46,19 +46,20 @@ The claim is split into 'chunks', separated by spaces above. Here is the breakdo
 - 0x00504d00 is the Lokad ID for SSP
 - 0x0000 is a 2-byte prefix, which can be used to expand this protocol in the future.
 - [7ce786b1b975c53c474764ca136f60bcf9dd438a1d0c01d94821f804c7b09749](https://token.fullstack.cash/?tokenid=7ce786b1b975c53c474764ca136f60bcf9dd438a1d0c01d94821f804c7b09749) is the token ID for the token.
-- [ipfs://bafybeif253afapbm23cq5mujt4pw2mb22lijwppgu57o2obqms5z2x54lu](https://bafybeif253afapbm23cq5mujt4pw2mb22lijwppgu57o2obqms5z2x54lu.ipfs.dweb.link/data.json) - is JSON data containing the claim information, stored on the IPFS network.
+- [ipfs://bafybeif253afapbm23cq5mujt4pw2mb22lijwppgu57o2obqms5z2x54lu](https://bafybeif253afapbm23cq5mujt4pw2mb22lijwppgu57o2obqms5z2x54lu.ipfs.dweb.link/data.json) - is JSON data containing the Claim information, stored on the IPFS network.
+
 
 ### 2.1.2 Example for making a Claim about another Claim:
 
 Token holders and other users can respond to Claims, by generating a new Claim that references another Claim. The first output of the transaction would be formatted like this:
 
-`OP_RETURN 0x0504d00 0x0000 04c3ecfc12097d680c2c5f4a82984b3e75609da3105123a95d1c1dff8e6f1a4f ipfs://bafybeif253afapbm23cq5mujt4pw2mb22lijwppgu57o2obqms5z2x54lu`
+`OP_RETURN 0x0504d00 0x0000 04c3ecfc12097d680c2c5f4a82984b3e75609da3105123a95d1c1dff8e6f1a4f p2wdb://zdpuArdVoAiujGRnfPUGg4ZMHweze1uL7MRM4LWfMmHLNzJRy`
 
 The claim takes the same format, but has slightly different context:
 - 0x00504d00 is the Lokad ID for SSP
 - 0x0000 is a 2-byte prefix, which can be used to expand this protocol in the future.
-- [04c3ecfc12097d680c2c5f4a82984b3e75609da3105123a95d1c1dff8e6f1a4f](https://token.fullstack.cash/?tokenid=04c3ecfc12097d680c2c5f4a82984b3e75609da3105123a95d1c1dff8e6f1a4f) is the transaction ID of the original Claim.
-- [ipfs://bafybeif253afapbm23cq5mujt4pw2mb22lijwppgu57o2obqms5z2x54lu](https://bafybeif253afapbm23cq5mujt4pw2mb22lijwppgu57o2obqms5z2x54lu.ipfs.dweb.link/data.json) - is JSON data containing the Claim information, stored on the IPFS network.
+- [04c3ecfc12097d680c2c5f4a82984b3e75609da3105123a95d1c1dff8e6f1a4f](https://blockchair.com/bitcoin-cash/transaction/04c3ecfc12097d680c2c5f4a82984b3e75609da3105123a95d1c1dff8e6f1a4f) is the transaction ID of the original Claim.
+- [p2wdb://zdpuArdVoAiujGRnfPUGg4ZMHweze1uL7MRM4LWfMmHLNzJRy](https://p2wdb.fullstack.cash/entry/hash/zdpuArdVoAiujGRnfPUGg4ZMHweze1uL7MRM4LWfMmHLNzJRy) - is JSON data containing the claim information, stored on the [P2WDB](https://p2wdb.com) network.
 
 ## 3. Data Storage
 
