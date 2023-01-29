@@ -3,10 +3,13 @@
 
 ### Specification version: 1.0.0
 ### Date originally published: July 27, 2020
-### Date last updated: July 27, 2020
+### Date last updated: January 29, 2023
 
 ## Authors
 Chris Troutner
+
+## Deprecated
+This specification is deprecated and officially dead. It was never developed.
 
 ## Acknowledgements
 - This specification uses the [Loken ID specification](https://github.com/bitcoincashorg/bitcoincash.org/blob/master/spec/op_return-prefix-guideline.md) as a template for the way a list of IDs will be maintained.
