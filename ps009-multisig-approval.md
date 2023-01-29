@@ -16,17 +16,17 @@ Chris Troutner
 
 This specification describes a workflow for generating on-chain 'approval' transactions from a multisignature wallet. The purpose of these approval transactions is to allow a group of people to securely broadcast their approval of a set of data, in way that can be independently verified, and thus impossible to counterfeit.
 
-Doing *simple* transactions with a multisignature wallet is complex. Doing *complex* transactions with a multisignature wallet is often prohibitively complex. This specification proposes an alternative solution: Generate a complex transaction with a normal P2PKH tranaction, then broadcast an 'approval transaction' from the multisignature wallet. Armed with the normal transaction and the approval transaction, an entity can independently verify the authenticity of both.
+Doing *simple* transactions with a multisignature wallet is complex. Doing *complex* transactions with a multisignature wallet is often prohibitively complex. This specification proposes an alternative solution: Generate a complex transaction with a normal P2PKH tranaction, then broadcast an 'approval transaction' from a multisignature wallet. Armed with the normal transaction and the approval transaction, an entity can independently verify the authenticity of both.
 
-The [pay-to-write database (**P2WDB**)](https://p2wdb.com) is used as a pragmatic lens to present this workflow, but it can abstracted to any workflow where a council of members (a multisignature wallet) need to securely approve on-chain data.
+The [pay-to-write database (**P2WDB**)](https://p2wdb.com) is used as the canonical use-case to present this workflow, but it can abstracted to any workflow where a council of members (a multisignature wallet) need to securely approve on-chain data.
 
-The Permissionless Software Foundation (**PSF**) is a decentralized organization that maintains the P2WDB. Writing data to the P2WDB requires payment in [PSF tokens](https://slp-token.fullstack.cash/?tokenid=38e97c5d7d3585a2cbf3f9580c82ca33985f9cb0845d4dcce220cb709f9538b0). They have created a [Minting Council](https://psfoundation.info/governance/minting-council) to set the price of writes each quarter, targeting an equivalent price of $0.01 USD per write. They are required to approve a data update so that all P2WDB instances on the planet can sync and charge the same price.
+The Permissionless Software Foundation (**PSF**) is a decentralized organization that maintains the P2WDB. Writing data to the P2WDB requires payment in [PSF tokens](https://psfoundation.cash). They have created a [Minting Council](https://psfoundation.info/governance/minting-council) to set the price of writes each quarter, targeting an equivalent price of $0.01 USD per write. They are required to approve a data update so that all P2WDB instances on the planet can sync and charge the same price.
 
 ## 2. Overview
 
 There are two on-chain transactions generated in this workflow:
 
-1. An **Update Transaction** is generated contains an [IPFS](https://ipfs.io) content ID (**CID**) in the transaction OP_RETURN. The CID resolves into JSON data containing the the data, and all the metadata required to validate the the Approval Transaction. This is a standard P2PKH (single signature) transaction.
+1. An **Update Transaction** is broadcast and contains an [IPFS](https://ipfs.io) content ID (**CID**) in the transaction OP_RETURN. The CID resolves into JSON data containing the arbitrary data, and all the metadata required to validate the the Approval Transaction. This is a standard P2PKH (single signature) transaction.
 
 2. An **Approval Transaction** is generated from a P2SH multisignature wallet. It also contains OP_RETURN that contains the work 'APPROVAL' and the Transaction ID (**TXID**) of the Update Transaction.
 
