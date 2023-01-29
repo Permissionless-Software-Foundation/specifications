@@ -55,7 +55,7 @@ The Approval Transaction must contain two pieces of information in its OP_RETURN
 1. The word 'APPROVAL'. This makes it easy to parse and identify the transation as an Approval Transaction.
 2. The TXID of the Update Transaction.
 
-The Approval Transaction must include a dust output (546 satoshis) in its second (index 1) output to a **Reference Address**. The Reference Address can be any arbitrary BCH address, but it must be known to all parties.
+The Approval Transaction must include a dust output (546 satoshis) in its second output (index 1) to a **Reference Address**. The Reference Address can be any arbitrary BCH address, but it must be known to all parties.
 
 ### 4.1 Approval Transaction Example
 
@@ -63,11 +63,11 @@ The Approval Transaction must include a dust output (546 satoshis) in its second
 
 ## 5. Validation
 
-Once the Approval Transaction is discovered by an interested entity (like an instance of the P2WDB), the chain of data can be followed to independently verify both transactions are valid and thus the arbitrary data in the Update Transaction is valid.
+Once the Approval Transaction is discovered by an interested entity (like an instance of the P2WDB), the chain of data can be traversed to independently verify both transactions are valid, and thus the arbitrary data in the Update Transaction is valid.
 
-Here is the set up steps required to validate the authenticity of the data in the Update Transaction:
+Here is the set of steps required to validate the authenticity of the data in the Update Transaction:
 
-1. Request the transaction history for the Reference Address and sort the transactions in descending order by block height (most recent first).
+1. Request the transaction history for the Reference Address and sort the transactions in descending order by block height. This ensures the most recent transactions are evaluated first.
 2. Traverse the transaction history until one is found with the word 'APPROVAL' in the OP_RETURN data. This is the latest *Approval Transaction*. Note the address which generated the transaction, this is the *multisignature address*.
 3. Retrieve the *Update Transaction* from the TXID stored in the OP_RETURN of the Approval Transaction.
 4. Retrieve the CID from the OP_RETURN of the Update Transaction.
@@ -77,7 +77,7 @@ Here is the set up steps required to validate the authenticity of the data in th
   - Verify that all NFTs listed are children of the given Group token.
   - Verify that each address listed is generated from the given public key.
   - Verify that each address holds the NFT listed.
-    - Note: Since NFTs can move, it may be necessary to verify that the address *held* the NFT at some point in its transaction history.
-  - Compute the multisignature address from the public keys and ensure it matches the address that generated the Approval Transaction.
+    - Note: Since NFTs can move, it may instead be necessary to verify that the address *held* the NFT at some point in its transaction history.
+  - Compute the multisignature address from the public keys and ensure it matches the address that generated the Approval Transaction (in step 2).
 
 After computing the above validations in step 6, the validator can be assured that the data is authentic and has not been counterfeited by a malicious party.
