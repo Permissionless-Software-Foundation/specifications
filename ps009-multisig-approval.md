@@ -45,6 +45,10 @@ The Update Transaction must contain an IPFS CID in it's OP_RETURN data. This CID
 
 The first three pieces of information are used to validate the approval. The forth piece of data can be any arbitrary data, which is the subject of the approval.
 
+### 3.1 Update Transaction Example
+
+- `OP_RETURN { "cid": "bafybeici4rbap4pqzaoj4hy4aapd4rhl6lz6cthsxigf7zreo2akr3xkf4", "ts": 1675031723394 }`
+
 ## 4. Approval Transaction
 The Approval Transaction must contain two pieces of information in its OP_RETURN data:
 
@@ -52,6 +56,10 @@ The Approval Transaction must contain two pieces of information in its OP_RETURN
 2. The TXID of the Update Transaction.
 
 The Approval Transaction must include a dust output (546 satoshis) in its second (index 1) output to a **Reference Address**. The Reference Address can be any arbitrary BCH address, but it must be known to all parties.
+
+### 4.1 Approval Transaction Example
+
+- `OP_RETURN APPROVAL 6eaa12d2749cf15b00873551088975dd6748d9a6f867426db914735c58ad730a`
 
 ## 5. Validation
 
