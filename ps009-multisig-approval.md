@@ -2,11 +2,11 @@
 
 ## Permissionless Software Foundation Specification 009 (PS009)
 
-### Specification version: 1.0.0
+### Specification version: 1.0.1
 
 ### Date originally published: January 29, 2023
 
-### Date last updated: January 29, 2023
+### Date last updated: April 9, 2023
 
 ## Authors
 
@@ -16,11 +16,13 @@ Chris Troutner
 
 This specification describes a workflow for generating on-chain 'approval' transactions from a multisignature wallet. The purpose of these approval transactions is to allow a group of people to securely broadcast their approval of a set of data, in way that can be independently verified, and thus impossible to counterfeit.
 
-Doing *simple* transactions with a multisignature wallet is complex. Doing *complex* transactions with a multisignature wallet is often prohibitively complex. This specification proposes an alternative solution: Generate a complex transaction with a normal P2PKH tranaction, then broadcast an 'approval transaction' from a multisignature wallet. Armed with the normal transaction and the approval transaction, an entity can independently verify the authenticity of both.
+Doing *simple* transactions with a multisignature wallet is complex. Doing *complex* transactions with a multisignature wallet is often prohibitively complex. This specification proposes an alternative solution: Generate a complex transaction with a normal P2PKH transaction, then broadcast an 'approval transaction' from a multisignature wallet. Armed with the normal transaction and the approval transaction, an entity can independently verify the authenticity of both.
 
-The [pay-to-write database (**P2WDB**)](https://p2wdb.com) is used as the canonical use-case to present this workflow, but it can abstracted to any workflow where a council of members (a multisignature wallet) need to securely approve on-chain data.
+The [pay-to-write database (**P2WDB**)](https://p2wdb.com) is used as the canonical use-case to present this workflow, but it can abstracted to any workflow where a council of members (a multisignature wallet) need to securely approve on-chain data or change the consensus rules of a distributed system.
 
 The Permissionless Software Foundation (**PSF**) is a decentralized organization that maintains the P2WDB. Writing data to the P2WDB requires payment in [PSF tokens](https://psfoundation.cash). They have created a [Minting Council](https://psfoundation.info/governance/minting-council) to set the price of writes each quarter, targeting an equivalent price of $0.01 USD per write. They are required to approve a data update so that all P2WDB instances on the planet can synchronize their consensus rules and charge the same price.
+
+This specification is implemented in the [psf-multisig-approval](https://www.npmjs.com/package/psf-multisig-approval) JavaScript library.
 
 ## 2. Overview
 
