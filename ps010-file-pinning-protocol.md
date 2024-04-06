@@ -52,6 +52,10 @@ There are multiple instances of the ipfs-file-pin-service software running in th
 
 ## 3. Supplimentary Information
 
+### Documentation
+
+- [PSFFPP.com](https://psffpp.com/docs/intro) - Official documentation site.
+
 ### Videos
 
 - [upload.psfoundation.info Demo](https://youtu.be/d9AGMTRM3Ws?si=pNZkDcikPQO1Jpbe)
