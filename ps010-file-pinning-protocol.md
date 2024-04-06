@@ -33,7 +33,7 @@ In the example transaction above, there were 7.57514589 as input, and 7.49179356
 
 The cost (in tokens) for pinning data to the PSFFPP network is set by the [PSF Minting Council](https://psfoundation.info/governance/minting-council). They periodically set the price to target $0.01 USD per megabyte for pinning costs. The token price is loosely pegged to the Bitcoin Cash cryptocurrency, so fluctuates over time relative to the US dollar. As a result, the price is never precisely $0.01 USD.
 
-A minimum cost of $0.01 USD in PSF tokens is require(d to pin content, even if that content is less than 1 MB in size. Files up to 100 MB can be pinned by the PSFFPP network. To find the current cost per MB of pinning file data, the [`getMcWritePrice())` function](https://github.com/Permissionless-Software-Foundation/psffpp?tab=readme-ov-file#get-the-write-price) can be called. That call will search the BCH blockchain for the latest price authorized by the PSF Minting Council.
+A minimum cost of $0.01 USD in PSF tokens is require(d to pin content, even if that content is less than 1 MB in size. Files up to 100 MB can be pinned by the PSFFPP network. To find the current cost per MB of pinning file data, the [`getMcWritePrice()` function](https://github.com/Permissionless-Software-Foundation/psffpp?tab=readme-ov-file#get-the-write-price) can be called. That call will search the BCH blockchain for the latest price authorized by the PSF Minting Council.
 
 ### Pin Claim
 
