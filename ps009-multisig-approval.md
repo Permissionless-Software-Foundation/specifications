@@ -54,7 +54,7 @@ The first three pieces of information are used to validate the approval. The for
 ## 4. Approval Transaction
 The Approval Transaction must contain two pieces of information in its OP_RETURN data:
 
-1. The word 'APPROVAL'. This makes it easy to parse and identify the transation as an Approval Transaction.
+1. The word 'APPROVAL'. This makes it easy to parse and identify the transaction as an Approval Transaction.
 2. The TXID of the Update Transaction.
 
 The Approval Transaction must include a dust output (546 satoshis) in its second output (index 1) to a **Reference Address**. The Reference Address can be any arbitrary BCH address, but it must be known to all parties.
