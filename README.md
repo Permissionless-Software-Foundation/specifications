@@ -17,4 +17,4 @@ This repository is used to track PSF Specification documents. These are specific
 
 - [PS010 - File Pinning Protocl](./ps010-file-pinning-protocol.md) - Introduces the PSF File Pinning Protocol (PSFFPP) implemented at [explorer.psffpp.com](https://explorer.psffpp.com) and described at [psffpp.com](psffpp.com). This is a protocol using SLP token burning to indirectly pay for the cost of hosting files on a decentralized IPFS network of nodes.
 
-- [PS011 - User Data Schema Harmonization](./ps011-user-data-schema-harmonization.md) - Describes the schema used in the `userData` section of the Mutable Data of an SLP token, across [Token Tiger](https://tokentiger.com), [SLP DEX](https://dex.psfoundation.info), and future app. This allows 'harmonization' for cross-capability usage of tokens.
+- [PS011 - User Data Schema & Harmonization](./ps011-user-data-schema-harmonization.md) - Describes the schema used in the `userData` section of the Mutable Data of an SLP token, across [Token Tiger](https://tokentiger.com), [SLP DEX](https://dex.psfoundation.info), and future apps. This allows 'harmonization' for cross-capability usage of tokens.
