@@ -53,7 +53,8 @@ Below is example JSON of the type of object that could fill the `userData` field
   ],
   "markdown": "This is **markdown** formatted text.",
   "categories": ["art", "cats"],
-  "tags": ["example", "cats", "screenshot"]
+  "tags": ["example", "cats", "screenshot"],
+  "schema": "ps011-v1.0.0"
 }
 ```
 
@@ -67,6 +68,7 @@ Each field should have the following types and default values:
 - `markdown` - `<string>` - `''`
 - `categories` - `<array>` - `[]`
 - `tags` - `<array>` - `[]`
+- `schema` - `<string>` - `'ps011-v1.0.0'`
 
 ## 4. Usage
 
@@ -74,3 +76,4 @@ Each field should have the following types and default values:
 - The `media` array can be used to attach a gallery of images to the token.
 - `currentUrl` is an arbitrary web URL that can be associated with the token.
 - `categories` and `tags` can be used by applications to help users sort and filter through tokens. Categories are generally more rigidly defined than tags.
+- The `schema` field allows for 'future proofing'.
