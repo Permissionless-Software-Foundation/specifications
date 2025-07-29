@@ -58,12 +58,12 @@ Below is example JSON of the type of object that could fill the `userData` field
 ```
 
 Each field should have the following types and default values:
-- `Variable Name` - <type> - default value
-- `currentUrl` - <string> - ''
-- `media` - <array> - []
-  - `filename` - <string> - ''
-  - `url` - <string> - ''
-  - `description` - <string> - ''
-- `markdown` - <string> - ''
-- `categories` - <array> - []
-- `tags` - <array> - []
+- `Variable Name` -` <type>` - `default value`
+- `currentUrl` - `<string>` - `''`
+- `media` - `<array>` - `[]`
+  - `filename` - `<string>` - `''`
+  - `url` - `<string>` - `''`
+  - `description` - `<string>` - `''`
+- `markdown` - `<string>` - `''`
+- `categories` - `<array>` - `[]`
+- `tags` - `<array>` - `[]`
