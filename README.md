@@ -14,3 +14,7 @@ This repository is used to track PSF Specification documents. These are specific
 - [PS008 - Claims]('./ps008-claims.md') - Is used to make on-chain claims about Tokens or other Claims. This is a way for user to leave on-chain comments about tokens, and compliments the Simple Store Protocol (PS006).
 
 - [PS009 - Multisig Approval](./ps009-multisig-approval.md) - Describes how a group of NFT holders can generate an on-chain 'stamp of approval' for arbitrary data. This can be used to securely distribute data to a decentralized network. The cononical use-case is the [PSF Minting Council](https://psfoundation.info/governance/minting-council) setting the price of writes to the [P2WDB](https://p2wdb.com).
+
+- [PS010 - File Pinning Protocl](./ps010-file-pinning-protocol.md) - Introduces the PSF File Pinning Protocol (PSFFPP) implemented at [explorer.psffpp.com](https://explorer.psffpp.com) and described at [psffpp.com](psffpp.com). This is a protocol using SLP token burning to indirectly pay for the cost of hosting files on a decentralized IPFS network of nodes.
+
+- [PS011 - User Data Schema Harmonization](./ps011-user-data-schema-harmonization.md) - Describes the schema used in the `userData` section of the Mutable Data of an SLP token, across [Token Tiger](https://tokentiger.com), [SLP DEX](https://dex.psfoundation.info), and future app. This allows 'harmonization' for cross-capability usage of tokens.
