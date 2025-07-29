@@ -67,3 +67,10 @@ Each field should have the following types and default values:
 - `markdown` - `<string>` - `''`
 - `categories` - `<array>` - `[]`
 - `tags` - `<array>` - `[]`
+
+## 4. Usage
+
+- The `markdown` field allows users to attach short or long-form content to the token.
+- The `media` array can be used to attach a gallery of images to the token.
+- `currentUrl` is an arbitrary web URL that can be associated with the token.
+- `categories` and `tags` can be used by applications to help users sort and filter through tokens. Categories are generally more rigidly defined than tags.
