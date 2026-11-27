@@ -181,11 +181,22 @@ Payout address (Phase 1)
   configuration (a rotation is an ops action, not a protocol event). If it is
   unset, validation fails closed (F1).
 
-Controller address
-: The single BCH cashaddr configured in pin-service as
-  `POOL_REGISTRY_CONTROLLER`. Only transactions whose first input spends from
-  this address may publish a registry epoch. Multisig control is future work.
-  **Phase-2 machinery.**
+Controller address (interim bootstrap)
+: The **interim** registry authority: a single BCH cashaddr configured in
+  pin-service as `POOL_REGISTRY_CONTROLLER`, used only to bootstrap the registry
+  before the council layer is deployed. Only transactions whose first input
+  spends from this address may publish a registry epoch while it is in force.
+  It is *temporary*, exactly like the Phase-1 `satsPerMb` environment variable
+  (section 3), and MUST be treated as such — never as the governance model.
+  **Phase-2 machinery (interim only).**
+
+Registry council (long-term)
+: The long-term registry authority: a **P2SH multisig address** controlled by a
+  **group of stakeholders** (e.g. the PSF Minting Council, or this network's
+  node-operator council). Registry epochs — pool address and `satsPerMb` — are
+  authorized by the [PS009 — Multisig Approval](ps009-multisig-approval.md)
+  workflow: n-of-m members approve each update, so **no single entity** can set
+  prices or redirect the pool. **Phase-2 machinery (long-term).**
 
 Registry epoch
 : The interval `[H_i, H_{i+1})` during which announcement `i` — and therefore
@@ -322,10 +333,13 @@ re-derive one from `fileSizeBytes`.
 **Phase-2 mechanism.** This registry is the Phase-2 mechanism. Phase 1 deploys
 without it: a single operator-configured payout address answers every claim
 (sections 6 and 7), and no `PSP1` transaction is required to accept a payment.
-The frozen announcement layout, auth rule, chain rule and epoch interval below
-are retained verbatim as the Phase-2 design.
+The announcement layout, chain rule and epoch interval below are retained
+verbatim. **The auth rule has two tiers** (section 4.2): an *interim*
+single-controller bootstrap and the *long-term* P2SH multisig council — the
+single-controller form exists only to get the registry running and is not the
+governance model.
 
-Registry announcements are append-only, controller-signed, chain-linked
+Registry announcements are append-only, council-approved, chain-linked
 OP_RETURNs. Detection mirrors Pin Claim detection: match OP_RETURN + 4-byte
 lokad.
 
@@ -361,14 +375,26 @@ OP_PUSHDATA <prevRegistryTxidBin32>
 (`src/adapters/transaction.js`): read `vout[0].scriptPubKey.hex`, check
 prefix/includes `6a0450535031`, then `Script.toASM` + split pushes.
 
-### 4.2 Auth rule (frozen)
+### 4.2 Auth rule
 
-Accept a registry TX only if the **first vin's prevout address** equals
-configured `POOL_REGISTRY_CONTROLLER` (normalized cashaddr). Do not accept
-"controller somewhere later in vin list" for v1.
+Two tiers, in two phases of the same Phase-2 mechanism:
 
-Normative detail: comparison is on the normalized cashaddr of the first input's
-prevout, never on the raw script of a later input, and never on any output.
+- **Interim (short-term):** accept a registry TX only if the **first vin's
+  prevout address** equals the configured `POOL_REGISTRY_CONTROLLER`
+  (normalized cashaddr), and do not accept "controller somewhere later in vin
+  list". This single-address rule is a **temporary bootstrap** — its only
+  purpose is to run the registry until the council layer is deployed. It MUST
+  NOT be presented as, or relied on as, the governance model.
+- **Long-term (normative):** registry epochs are authorized by the **P2SH
+  multisig council** (section 2) via the [PS009 — Multisig Approval]
+  (ps009-multisig-approval.md) workflow: the first vin's prevout is the
+  council's known P2SH address, and the accompanying n-of-m approval
+  transaction is verified per PS009. **No single address or entity may set the
+  price or redirect the pool.**
+
+Normative detail for both variants: comparisons are on normalized cashaddr /
+P2SH locking payloads, never on the raw script of a later input, and never on
+any output.
 
 ### 4.3 Chain rule (frozen)
 
@@ -682,9 +708,11 @@ distinguishably (log/`details` string), not collapsed into one generic error:
   epoch can be admitted. Reject rather than accept.
 - F8 — Address canonicalization failure: the epoch address or a payment output
   cannot be normalized to a comparable P2SH32 payload.
-- F9 — Registry/auth integrity failure (Phase 2): announcement not signed by the
-  first vin of the controller address, broken `prevRegistryTxid` link, or unknown
-  PSP1 version (the epoch is not admitted at all).
+- F9 — Registry/auth integrity failure (Phase 2): the announcement is not
+  authorized by the authority for its tier — the first vin of the single
+  controller address (interim) or the council's P2SH address with a valid
+  PS009 approval (long-term) — or the `prevRegistryTxid` link is broken, or the
+  PSP1 version is unknown (the epoch is not admitted at all).
 
 ### 7.4 Registry sync requirements (Phase 2 supporting rule)
 
@@ -856,7 +884,16 @@ if the address or `satsPerMb` is unset; there is no registry, no epoch, and no
 pool rotation. The CashScript pool/share contracts, the `PSP1` registry and pool
 rotation are deferred until the payment loop is verified end-to-end; after that
 the frozen `infra-changes.md` design applies as Phase 2, enabling revenue
-divvying among operators. No decision above is renumbered.
+divvying among operators. **(f) No single-entity control of the registry (locked 2026-11-27).** The
+pool registry's governance must not rest on one address or one person. The
+single-controller `POOL_REGISTRY_CONTROLLER` is an **interim bootstrap only**:
+it may start the registry, and the long-term authority is a **P2SH multisig
+council** of stakeholders authorizing registry epochs through the PS009
+Multisig Approval workflow (sections 2 and 4.2). Wherever a provision of this
+specification assumes a single controller, read that assumption as the interim
+bootstrap — never as an endorsement of single-entity governance.
+
+No decision above is renumbered.
 
 ---
 
@@ -877,7 +914,6 @@ divvying among operators. No decision above is renumbered.
 ## Appendix B — Out of scope for this revision
 
 - CashScript cron/GUI; redesigning the pool to avoid address rotation.
-- Multisig registry controller (future).
 - Indexer webhook retry queue.
 - Live USD/BCH oracle at claim validation time.
 - Pool payout schedule, operator set, treasury policy.
