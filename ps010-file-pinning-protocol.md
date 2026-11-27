@@ -4,7 +4,12 @@
 
 ### Specification version: 2.0.0
 
-### Supersedes: 1.0.0 (File Pinning Protocol, PSF-token proof-of-burn)
+### Supersedes: [PS010 v1.0.0 — File Pinning Protocol, PSF-token proof-of-burn](https://github.com/Permissionless-Software-Foundation/specifications/blob/3ec369935b2d11bd551ba542c104a84bb6641e23/ps010-file-pinning-protocol.md)
+
+Archive note: the v1.0.0 link above is a permanent link into this repository's
+history — the old text stays browsable even after this revision merges. PS010
+v1.0.0 remains the governing answer for pins created under it (section 8.1);
+this revision does not re-validate them.
 
 ### Date originally published: April 6, 2024
 
