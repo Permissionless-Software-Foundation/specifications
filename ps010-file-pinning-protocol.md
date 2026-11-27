@@ -52,6 +52,34 @@ OP_RETURN core — `0x00510000 | field2(32B) | cid | filename` — is unchanged 
 v1.0.0. Field 2 now carries exactly one thing: the txid of the BCH payment that
 bought the pin. Only the meaning of field 2 and the validation of payment change.
 
+### System overview
+
+Fig. 1 — one network node is an operator's own full Cash Stack; the only
+cross-operator surfaces are the libp2p content mesh and the public BCH chain.
+
+```mermaid
+flowchart TD
+    CHAIN[("BCH blockchain — shared public truth")]
+    subgraph NODE["One operator's full Cash Stack"]
+        FN["BCH full node + ZMQ"]
+        IDX["psf-slp-indexer-g2"]
+        PS["ipfs-file-pin-service"]
+        DB[("MongoDB — pin records")]
+        FN -->|"ZMQ block stream"| IDX
+        IDX -->|"webhook POST /ipfs/pin-claim (local 172.17.0.1:5031)"| PS
+        PS <-->|"read / write pin lifecycle"| DB
+    end
+    MESH["libp2p / helia-coord content mesh"]
+    CHAIN -->|"blocks"| FN
+    PS -->|"validate BCH payment tx"| CHAIN
+    PS -->|"download / pin content"| MESH
+    MESH -->|"fetch CID bytes from peers"| PS
+```
+
+Within a node, the indexer is a **messenger only** (it detects claims and
+webhooks the local pin-service); it never validates payment. The pin-service is
+the only component that resolves addresses and validates sats (section 7).
+
 ### Scope
 
 In scope: BCH-only payment for pinning; the Phase-1 single-payout-address
@@ -445,7 +473,46 @@ the pin-service remains responsible for retry and IBD replay.
 
 ## 6. Payment flow
 
-Steps 1–6 are the user/client path. Step 7+ is the pin-service path.
+Steps 1–6 are the user/client path. Step 7+ is the pin-service path. Fig. 2
+shows the same flow as a sequence; Mermaid's own step counters correspond to
+the §6 steps below.
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant U as End-User / client
+    participant S as ipfs-file-stager
+    participant B as BCH chain
+    participant I as psf-slp-indexer-g2 (per node)
+    participant P as ipfs-file-pin-service (per node)
+    participant F as IPFS swarm / helia-coord
+
+    U->>S: POST /ipfs/upload (file)
+    S->>F: add file to IPFS → compute CID
+    S-->>U: CID
+    U->>S: POST /ipfs/getBchCost {sizeInMb}
+    S->>P: GET /ipfs/payment-address
+    P-->>S: { payoutAddress, satsPerMb }
+    S-->>U: quote { payoutAddress, satsRequired }
+    U->>B: send BCH to payoutAddress
+    B-->>U: paymentTxid
+    U->>S: POST /ipfs/createPinClaim {cid, filename, paymentTxid}
+    S->>B: verify payment pays payoutAddress
+    S->>B: broadcast OP_RETURN claim (psffpp.createPinClaimBCH)
+    B-->>S: claimTxid
+    B->>I: block/ZMQ: claim 00510000 detected
+    I->>P: webhook POST /ipfs/pin-claim (fire-and-forget)
+    P->>B: re-fetch + verify payment TX (fails closed: F1–F8)
+    P->>F: download CID from any peer (direct dial)
+    P->>P: validate real size vs satsPaid (98% tolerance)
+    P->>F: pin + DHT provide
+    U->>P: GET /ipfs/pin-status/:cid ⇒ dataPinned: true
+    F-->>U: content served at /ipfs/view/:cid
+```
+
+Note that the user/client and the stager together perform steps 1–6; everything
+from step 7 on happens once per network node — N times over, producing N
+redundant copies of the content (section 1).
 
 1. Client: `GET {pinService}/ipfs/payment-address`.
    Phase 1 response: `{ address, satsPerMb }` — no `validFromHeight` and no
@@ -705,6 +772,27 @@ unchanged; this specification does not mark a payment txid as globally consumed
 - User key material: `psffpp-client` accepts a WIF in tus metadata and
   `ipfs-file-stager` stores a WIF in Mongo. Neither may survive M4.
 
+### 8.6 Deployment topology (operator perspective)
+
+Fig. 3 — setting up one node of the network. Everything this node needs lives
+on the operator's own box; the mesh and the chain are the only cross-operator
+surfaces.
+
+```mermaid
+flowchart TD
+    A["Provision a box: OS, Docker, storage"] --> B["Run BCH full node (BCHN) + enable ZMQ"]
+    B --> C["Deploy psf-slp-indexer-g2 (own chain feed)"]
+    C --> D["Deploy ipfs-file-pin-service (own Mongo, own wallet)"]
+    D --> E["Configure PAYOUT_ADDRESS, SATS_PER_MB"]
+    E --> F["Connect to pin network (helia-coord)"]
+    F --> F1["BOOTSTRAP_SERVERS: find initial peers"]
+    F --> F2["ANNOUNCE_MULTIADDRS: advertise direct dial address"]
+    F --> F3["wireguard/proxy: expose REST + libp2p addrs"]
+    F1 & F2 & F3 --> G["Indexer webhook → local pin-service (172.17.0.1:5031)"]
+    G --> H["Run: monitor pins, retries, peer health, DHT announce"]
+    H --> I["Phase 2: take part in pool payout — see Appendix C"]
+```
+
 ---
 
 ## 9. Decisions (locked 2026-11-23)
@@ -783,3 +871,32 @@ divvying among operators. No decision above is renumbered.
 - All Phase-2 implementation (pool/share contracts, `PSP1` announce CLIs,
   registry sync) until the Phase-1 payment loop is verified end-to-end.
 - Multi-operator revenue divvying (Phase 2).
+
+---
+
+## Appendix C — Node-runner perspective (Phase-2 payout model)
+
+Fig. 4 — the operator's view of a full month. **Non-normative**: PS010 v2.0.0
+does not specify payout schedules, operator set, or treasury policy (Appendix
+B). This diagram illustrates the Phase-2 payout model captured in the DRAFT
+design record `psffpp-payments/docs/performance-weighted-payouts.md`.
+
+```mermaid
+flowchart TD
+    A["Run own full Cash Stack (full node + indexer + pin-service)"] --> B
+    subgraph DAILY ["Daily — doing the work"]
+        B["Index claims from own chain feed"]
+        B --> C["Validate BCH payments (payout address, size, 98% rule)"]
+        C --> D["Fetch content via mesh and pin it"]
+        D --> E["Serve content + announce on DHT"]
+    end
+    E --> F["Monthly: own SLP NFT identity = homing beacon"]
+    F --> G["Sign score attestations { month, score for each other node }"]
+    G --> H["Post attestations on-chain (public, non-repudiable)"]
+    H --> I["Aggregator: mean score per node (self excluded)"]
+    I --> J["Payout vector ∝ mean scores (largest-remainder; remainder → treasury)"]
+    J --> K["Settlement tx: pool UTXOs → member P2PKH + treasury"]
+    K --> L["≥K member signatures over the exact tx"]
+    L --> M["Broadcast settlement (CLTV monthly window, guarded outputs)"]
+    M --> N["Receive BCH payout ∝ performance"]
+```
