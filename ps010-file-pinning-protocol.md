@@ -192,11 +192,13 @@ Controller address (interim bootstrap)
 
 Registry council (long-term)
 : The long-term registry authority: a **P2SH multisig address** controlled by a
-  **group of stakeholders** (e.g. the PSF Minting Council, or this network's
-  node-operator council). Registry epochs — pool address and `satsPerMb` — are
-  authorized by the [PS009 — Multisig Approval](ps009-multisig-approval.md)
-  workflow: n-of-m members approve each update, so **no single entity** can set
-  prices or redirect the pool. **Phase-2 machinery (long-term).**
+  **new council of this network's node-operators** — deliberately separate from
+  the PSF Minting Council. Registry epochs — pool address and `satsPerMb` —
+  are authorized by the council via a **PS009 Multisig Approval** process:
+  n-of-m members approve each update, so **no single entity** can set prices or
+  redirect the pool. PS009 itself is expected to be revised (a **PS009 v2**) to
+  move away from PSF-token assumptions and focus on carrying the `satsPerMb`
+  rate. **Phase-2 machinery (long-term).**
 
 Registry epoch
 : The interval `[H_i, H_{i+1})` during which announcement `i` — and therefore
@@ -264,14 +266,15 @@ configured value for every claim at every height. There is no announcement and
 no epoch in Phase 1.
 
 **Phase 2 (future):** the environment variable is superseded by a **dynamic,
-on-chain rate update**. New `satsPerMb` values are authorized by the
-[PS009 — Multisig Approval](ps009-multisig-approval.md) workflow (a multisig
-council, as the PSF Minting Council has historically used) and distributed
-through the registry epochs of section 4. This is a *reuse* of PS009's
-approval mechanism; it does **not** revive the removed legacy PS009 token
-write-price lookup (section 8.2). The rate a claim is validated against
-remains fixed and recorded per epoch, and is never recomputed from USD or from
-a live oracle ("Consequences" below).
+on-chain rate update**. New `satsPerMb` values are authorized by a **multisig
+council of this network's node-operators** via the
+[PS009 — Multisig Approval](ps009-multisig-approval.md) mechanism, and
+distributed through the registry epochs of section 4. PS009 is expected to be
+revised (a **PS009 v2**) to drop its PSF-token focus and carry the
+`satsPerMb` rate. This follows PS009's multisig-approval pattern; it does
+**not** revive the removed legacy PS009 token write-price lookup (section 8.2).
+The rate a claim is validated against remains fixed and recorded per epoch, and
+is never recomputed from USD or from a live oracle ("Consequences" below).
 
 The rate semantics below (integer sats/MB/year, fixed for the lifetime of the
 claim, never recomputed from USD) hold in both phases.
@@ -386,11 +389,12 @@ Two tiers, in two phases of the same Phase-2 mechanism:
   purpose is to run the registry until the council layer is deployed. It MUST
   NOT be presented as, or relied on as, the governance model.
 - **Long-term (normative):** registry epochs are authorized by the **P2SH
-  multisig council** (section 2) via the [PS009 — Multisig Approval]
-  (ps009-multisig-approval.md) workflow: the first vin's prevout is the
-  council's known P2SH address, and the accompanying n-of-m approval
-  transaction is verified per PS009. **No single address or entity may set the
-  price or redirect the pool.**
+  multisig council of node-operators** (section 2) via a [PS009 — Multisig
+  Approval](ps009-multisig-approval.md) process (a PS009 v2 is expected, to
+  drop PSF-token assumptions and carry the `satsPerMb` rate): the first vin's
+  prevout is the council's known P2SH address, and the accompanying n-of-m
+  approval transaction is verified per PS009. **No single address or entity
+  may set the price or redirect the pool.**
 
 Normative detail for both variants: comparisons are on normalized cashaddr /
 P2SH locking payloads, never on the raw script of a later input, and never on
@@ -888,10 +892,13 @@ divvying among operators. **(f) No single-entity control of the registry (locked
 pool registry's governance must not rest on one address or one person. The
 single-controller `POOL_REGISTRY_CONTROLLER` is an **interim bootstrap only**:
 it may start the registry, and the long-term authority is a **P2SH multisig
-council** of stakeholders authorizing registry epochs through the PS009
-Multisig Approval workflow (sections 2 and 4.2). Wherever a provision of this
-specification assumes a single controller, read that assumption as the interim
-bootstrap — never as an endorsement of single-entity governance.
+council of this network's node-operators** — a new council, not the PSF
+Minting Council — authorizing registry epochs through the PS009 Multisig
+Approval workflow (sections 2 and 4.2). PS009 is expected to be revised (a
+**PS009 v2**) to drop PSF-token assumptions and carry the `satsPerMb` rate.
+Wherever a provision of this specification assumes a single controller, read
+that assumption as the interim bootstrap — never as an endorsement of
+single-entity governance.
 
 No decision above is renumbered.
 
