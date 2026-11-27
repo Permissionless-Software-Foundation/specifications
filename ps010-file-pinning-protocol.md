@@ -244,13 +244,26 @@ never validated against USD.
 
 Each registry announcement bakes an integer `satsPerMb` (uint64, satoshis per
 megabyte per year) computed at announcement time. Claims in epoch `i` are
-validated against `satsPerMb_i` only.
+validated against `satsPerMb_i` only (Phase 2; section 4).
 
-Phase 1 has no announcement: `satsPerMb` is operator-configured (environment
-variable) and served by `GET /ipfs/payment-address`, and validation uses that
-configured value. The on-chain announcement wording in this subsection is the
-Phase-2 mechanism. The rate semantics below (integer sats/MB/year, fixed for the
-lifetime of the claim, never recomputed from USD) hold in both phases.
+**Phase 1 (this deployment):** `satsPerMb` is an operator-configured
+**environment variable** — a temporary implementation detail, not a protocol
+value. It is served by `GET /ipfs/payment-address`, and validation uses that
+configured value for every claim at every height. There is no announcement and
+no epoch in Phase 1.
+
+**Phase 2 (future):** the environment variable is superseded by a **dynamic,
+on-chain rate update**. New `satsPerMb` values are authorized by the
+[PS009 — Multisig Approval](ps009-multisig-approval.md) workflow (a multisig
+council, as the PSF Minting Council has historically used) and distributed
+through the registry epochs of section 4. This is a *reuse* of PS009's
+approval mechanism; it does **not** revive the removed legacy PS009 token
+write-price lookup (section 8.2). The rate a claim is validated against
+remains fixed and recorded per epoch, and is never recomputed from USD or from
+a live oracle ("Consequences" below).
+
+The rate semantics below (integer sats/MB/year, fixed for the lifetime of the
+claim, never recomputed from USD) hold in both phases.
 
 Consequences, all normative:
 
