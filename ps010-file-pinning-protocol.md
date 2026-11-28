@@ -394,7 +394,9 @@ Two tiers, in two phases of the same Phase-2 mechanism:
   Rate Approval](ps009-multisig-approval-v2.md): the first vin's
   prevout is the council's known P2SH address, and the accompanying n-of-m
   approval transaction is verified per PS009. **No single address or entity
-  may set the price or redirect the pool.**
+  may set the price or redirect the pool.** The approved datum is the
+  announcement record itself: all epoch values are read on chain (section
+  4.1); no IPFS lookup is performed at validation.
 
 Normative detail for both variants: comparisons are on normalized cashaddr /
 P2SH locking payloads, never on the raw script of a later input, and never on

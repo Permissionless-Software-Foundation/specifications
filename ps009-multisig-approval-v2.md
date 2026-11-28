@@ -88,19 +88,25 @@ same way PS010 handles controller compromise (PS010 section 8).
 
 ## 3. Overview — two transactions
 
-The workflow is unchanged in shape from PS009 v1:
+The workflow is unchanged in shape from PS009 v1, with one important scoping
+change: **the approved datum lives on chain, not in IPFS.**
 
 1. An **Update Transaction** is broadcast from a normal P2PKH address. Its
    OP_RETURN carries an IPFS CID resolving to a JSON document containing the
-   council membership proof and the approved datum (`satsPerMb`, pool
-   address).
+   **council membership proof** (who is approving) and a reference to the
+   **on-chain `PSP1` announcement being approved** (PS010 section 4).
 2. An **Approval Transaction** is generated from the council's P2SH multisig
    wallet. Its OP_RETURN carries the word `APPROVAL` and the TXID of the
    Update Transaction.
 
-Any entity can walk the chain: Update TX → CID → JSON → recomputed multisig
-address → Approval TX spending from it. Each transaction validates the
-other, exactly as in v1 (PS009 v1 section 5).
+The datum being approved — the `satsPerMb` rate, the pool payout address and
+`validFromHeight` — is the `PSP1` announcement record itself, stored
+**directly on chain** (PS010 section 4.1). The IPFS JSON carries only the
+membership proof. No IPFS lookup is needed to determine the rate or pool in
+force at any height.
+
+Any entity can walk the chain: PSP1 announcement → Update TX → CID → JSON
+membership proof → recomputed multisig address → Approval TX spending from it.
 
 ## 4. Update Transaction
 
@@ -114,18 +120,19 @@ document carrying the following properties:
    key holding each NFT at the time of the transaction.
 3. The P2SH multisig address derived from those public keys, and the n-of-m
    threshold.
-4. The approved `satsPerMb` (uint64, satoshis per megabyte per year — PS010
-   section 3) and the pool payout address `A_i` for the epoch (PS010 section
-   4).
-5. Optionally, the `PSP1` registry announcement TXID for the epoch it
-   approves.
+4. The **TXID of the on-chain `PSP1` registry announcement this Update
+   endorses**. The `satsPerMb`, pool payout address `A_i` and
+   `validFromHeight` of that announcement ARE the approved datum (PS010
+   section 4.1, 4.4) — the chain is authoritative, never this JSON.
 
-The first three properties validate the approval; the last two are the
-subject of the approval (the registry datum).
+The first three properties validate the approval (who is approving); the
+fourth binds the approval to a specific on-chain epoch record (what is being
+approved). Each transaction group validates the other, exactly as in v1
+(PS009 v1 section 5).
 
 ### 4.1 Update Transaction example
 
-- `OP_RETURN { "cid": "bafybei...redacted...", "ts": 1770000000000 }`
+- `OP_RETURN { "cid": "bafybei...redacted...", "endorses": "<PSP1 announcement txid>", "ts": 1770000000000 }`
 
 ## 5. Approval Transaction
 
@@ -146,33 +153,38 @@ consults the same Reference Address convention).
 
 ## 6. Validation
 
-A PS010 node (or any interested party) validates an approved registry datum as
+A PS010 node (or any interested party) validates an approved registry epoch as
 follows:
 
-1. Request the transaction history for the Reference Address, sorted
+1. Read the `PSP1` announcement under consideration directly from the chain
+   (PS010 section 4.1 decode); note its txid, `satsPerMb`, pool payout
+   address and `validFromHeight`. These are the epoch's operative values; no
+   IPFS lookup is involved.
+2. Request the transaction history for the Reference Address, sorted
    descending by block height. Find the most recent transaction containing
    `APPROVAL` in its OP_RETURN — the latest Approval Transaction — and note
    the address which generated it (the multisig address).
-2. Retrieve the Update Transaction from the TXID in the Approval
+3. Retrieve the Update Transaction from the TXID in the Approval
    Transaction's OP_RETURN, and the CID from the Update Transaction's
    OP_RETURN.
-3. Fetch and parse the JSON document for that CID from an IPFS gateway.
-4. Verify the Group Token ID is listed and matches the council's expected
+4. Fetch and parse the JSON document for that CID from an IPFS gateway.
+5. Verify the Group Token ID is listed and matches the council's expected
    Group Token.
-5. Verify that all operator NFTs are children of that Group Token.
-6. Verify that each address listed in the JSON is generated from the given
+6. Verify that all operator NFTs are children of that Group Token.
+7. Verify that each address listed in the JSON is generated from the given
    public key.
-7. Verify that each address holds the NFT listed. Since NFTs can move, it may
+8. Verify that each address holds the NFT listed. Since NFTs can move, it may
    be necessary to verify the address *held* the NFT at the relevant point in
    its transaction history — this is what makes the beacon robust to changed
    addresses and rotated keys.
-8. Compute the P2SH multisig address from the public keys and the published
+9. Compute the P2SH multisig address from the public keys and the published
    threshold, assert it equals the address that generated the Approval
    Transaction, and assert the Approval Transaction's first input spends from
    that multisig address (i.e. it was signed by the n-of-m council keys).
-9. Assert the JSON's `satsPerMb` and pool address `A_i` equal the registry
-   epoch (or proposed epoch) being validated — PS010 section 4.2 / failure
-   case F9.
+10. Assert the JSON's `endorses` field equals the PSP1 announcement's txid
+    from step 1, and that the announcement's first vin spends from the
+    council's P2SH address (PS010 section 4.2). A mismatch is PS010 failure
+    case F9 — the epoch is not admitted.
 
 The operator performance reports carried in the SLP mutable data are read for
 network bookkeeping only; they are not inputs to approval validation.
@@ -185,7 +197,7 @@ network bookkeeping only; they are not inputs to approval validation.
 | Group Token issuer | PSF | the registry council itself |
 | Token dependency | PSF token / PSF-token payments | SLP only (identity + performance data); no PSF token |
 | Approving authority | PSF Minting Council | new registry council of node-operators |
-| Approved datum | PSFFPP write-price | PS010 `satsPerMb` rate + pool address |
+| Approved datum | PSFFPP write-price (in the Update-TX JSON) | on-chain `PSP1` registry record (`satsPerMb` + pool address); reads never touch IPFS |
 | Validation inputs | group token ID + NFT holdings | group token ID + NFT holdings + approved-datum check |
 | Implementation | psf-multisig-approval JS library | fork of psf-multisig-approval, adapted for v2 |
 | Use case | PSFFPP consensus-sync of write price | PS010 file-pinning registry epochs (§4.2) |
