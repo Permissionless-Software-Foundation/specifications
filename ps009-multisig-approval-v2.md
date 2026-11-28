@@ -17,13 +17,14 @@ This revision supersedes **PS009 v1 — Multisig Approval**:
   `3ec3699`):
   https://github.com/Permissionless-Software-Foundation/specifications/blob/3ec369935b2d11bd551ba542c104a84bb6641e23/ps009-multisig-approval.md
 
-v2 keeps the v1 workflow — an Update Transaction approved by a P2SH multisig
-Approval Transaction, with council membership keyed to SLP NFTs — but
-re-scopes it: the council is this network's node-operators (not the PSF
-Minting Council), and the approved datum is the File Pinning Protocol's
-`satsPerMb` rate. There is **no PSF token anywhere in this revision**; the
-SLP NFT is used only as an operator-identity beacon and a carrier for
-per-operator performance data.
+PS009 v2 uses the approval-transaction workflow: an Update Transaction
+approved by a P2SH multisig Approval Transaction, with council membership
+keyed to SLP NFTs. Re-scoped for the File Pinning Protocol (PS010): the
+council is this network's node-operators (not the PSF Minting Council), and
+the approved datum is the on-chain `PSP1` registry record — the `satsPerMb`
+rate and pool payout address. There is **no PSF token anywhere in this
+revision**; the SLP NFT appears only as an operator-identity beacon and a
+carrier for per-operator performance data.
 
 ## Authors
 
@@ -39,15 +40,14 @@ approve the `satsPerMb` price and the pool payout address** for each registry
 epoch (PS010 section 4). No single operator, and no external minting body, can
 set the price or redirect the pool.
 
-v1 derived council membership from holders of SLP NFTs belonging to a PSF
-Group Token, and approved PSFFPP *write-price* data paid for in PSF tokens.
-v2 keeps the NFT-based membership mechanism — it is the proven, practical way
-for council members to be discovered and verified — but re-scopes it: the
+Council membership is proven by **holding an SLP NFT** — the proven, practical
+way to discover and verify the approving parties on chain (section 2). The
 Group Token is issued by the **registry council of node-operators** (not the
-PSF Minting Council), with **one NFT per operator**, and the approved object
-is the PS010 registry epoch datum (`satsPerMb` + pool address). PSF tokens
-play no role: no PSF-token payments, no PSF-token governance, no PSF
-write-price feed.
+PSF Minting Council), with **one NFT per operator**. The approved object is
+the PS010 registry epoch datum: the on-chain `PSP1` record carrying the
+`satsPerMb` rate and pool payout address (PS010 section 4). PSF tokens play no
+role: no PSF-token payments, no PSF-token governance, no PSF write-price
+feed.
 
 ## 2. Council membership
 
@@ -68,11 +68,10 @@ Token**:
   metering). This is how the network tracks each operator's reporting; it is
   not an input to approval validation.
 - **Multisig construction.** The council's P2SH multisig address is built from
-  the current NFT-holder public keys, following the procedure already
-  implemented in the v1 JavaScript library
+  the current NFT-holder public keys, following the procedure in the
   [psf-multisig-approval](https://www.npmjs.com/package/psf-multisig-approval)
-  (which implements PS009 v1). That library is expected to be **forked and
-  adapted for this v2 spec** — it is the implementation home for this workflow.
+  JavaScript library, which is expected to be **forked and adapted** — it is
+  the implementation home for this workflow.
 - **N-of-M threshold:** chosen by the council and published in the registry
   policy (e.g. 3-of-5). Public keys are compressed and sorted
   lexicographically before address derivation, so that any party recomputes
@@ -127,8 +126,7 @@ document carrying the following properties:
 
 The first three properties validate the approval (who is approving); the
 fourth binds the approval to a specific on-chain epoch record (what is being
-approved). Each transaction group validates the other, exactly as in v1
-(PS009 v1 section 5).
+approved). Each transaction validates the other.
 
 ### 4.1 Update Transaction example
 
@@ -189,28 +187,19 @@ follows:
 The operator performance reports carried in the SLP mutable data are read for
 network bookkeeping only; they are not inputs to approval validation.
 
-## 7. Differences from PS009 v1
+## 7. Relationship to PS009 v1
 
-| Aspect | v1 (1.0.2) | v2 (this revision) |
-|---|---|---|
-| Membership proof | holders of SLP NFTs of a PSF Group Token | holders of the council's SLP NFTs (node-operator Group Token) |
-| Group Token issuer | PSF | the registry council itself |
-| Token dependency | PSF token / PSF-token payments | SLP only (identity + performance data); no PSF token |
-| Approving authority | PSF Minting Council | new registry council of node-operators |
-| Approved datum | PSFFPP write-price (in the Update-TX JSON) | on-chain `PSP1` registry record (`satsPerMb` + pool address); reads never touch IPFS |
-| Validation inputs | group token ID + NFT holdings | group token ID + NFT holdings + approved-datum check |
-| Implementation | psf-multisig-approval JS library | fork of psf-multisig-approval, adapted for v2 |
-| Use case | PSFFPP consensus-sync of write price | PS010 file-pinning registry epochs (§4.2) |
-
-v1 remains valid for the systems already using it; this revision does not
-withdraw it. It only defines the mechanism PS010 references for its long-term
-registry governance. PS010 section 8.2's removal of *legacy PS009 token
-write-price lookups* refers to PS009 v1's data feed, not to this approval
-workflow.
+PS009 v1 — Multisig Approval — introduced the approval-transaction workflow
+and remains valid for the systems already using it. This revision uses the
+same workflow for PS010, re-scoped: membership is the registry council of
+node-operators (not the PSF Minting Council), there is no PSF token, and the
+approved datum is the on-chain `PSP1` registry record. PS010 section 8.2's
+removal of *legacy PS009 token write-price lookups* refers to v1's data feed,
+not to this approval workflow.
 
 ## 8. Status
 
 Draft — added alongside PS010 v2.0.0 (PR #11) for review and is **not yet
-normative**. Implementation is expected to fork the v1 library
-[psf-multisig-approval](https://www.npmjs.com/package/psf-multisig-approval)
-in lockstep if this draft is adopted.
+normative**. The library implementation
+([psf-multisig-approval](https://www.npmjs.com/package/psf-multisig-approval))
+is expected to be revised in lockstep if this draft is adopted.

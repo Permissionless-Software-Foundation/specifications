@@ -22,8 +22,8 @@ Chris Troutner (v1.0.0); revision 2.0.0 drafted under Sam (Cash Stack).
 ## Normative language
 
 MUST, MUST NOT, SHOULD, MAY are used in the RFC 2119 sense. Where this document
-is silent, the frozen byte layout in `psffpp-payments/docs/infra-changes.md` is
-authoritative — that document freezes wire bytes; this one states protocol rules.
+is silent, the normative byte layout in `psffpp-payments/docs/infra-changes.md` is
+authoritative — that document fixes wire bytes; this one states protocol rules.
 
 ---
 
@@ -33,14 +33,12 @@ This specification describes a protocol for storing (pinning) files on the
 [IPFS](https://ipfs.io) network. It is the Permissionless Software Foundation
 File Pinning Protocol (PSFFPP).
 
-This revision changes the payment layer only, and it is a **clean break**. In
-v1.0.0 a pin was paid for with PSF-token proof-of-burn. In v2.0.0 a pin is paid
-for with a targeted fee of $0.01/MB paid in BCH — in Phase 1 to a single
-operator-configured payout address, in Phase 2 to a pool contract whose address
-and per-epoch rate come from a controller-published, append-only registry.
-PS010 v2.0.0 accepts **BCH payments only**: there is no legacy acceptance mode,
-no compatibility flag, and no dual validation path. The proof-of-burn payment
-mechanism is removed, not frozen.
+Pins are paid for with a targeted fee of **$0.01/MB paid in BCH** — in Phase 1
+to a single operator-configured payout address, in Phase 2 to a pool contract
+whose address and per-epoch rate come from a council-published, append-only
+registry. PS010 accepts **BCH payments only**: there is no legacy acceptance
+mode, no compatibility flag, and no dual validation path. The earlier
+PSF-token proof-of-burn payment mechanism is removed outright.
 
 The protocol remains anonymous, permissionless, and censorship-resistant: no
 account, no identity, no token purchase, and no permission is required. A payer
@@ -48,9 +46,9 @@ needs only a BCH wallet. Pinning nodes remain free to accept or refuse any claim
 exactly as BCH nodes independently validate transactions.
 
 This specification builds on the PS008 specification for Claims. The Pin Claim
-OP_RETURN core — `0x00510000 | field2(32B) | cid | filename` — is unchanged from
-v1.0.0. Field 2 now carries exactly one thing: the txid of the BCH payment that
-bought the pin. Only the meaning of field 2 and the validation of payment change.
+OP_RETURN core — `0x00510000 | field2(32B) | cid | filename` — is fixed. Field
+2 carries exactly one thing: the txid of the BCH payment that bought the pin.
+Only the meaning of field 2 and the validation of payment change.
 
 ### System overview
 
@@ -108,7 +106,7 @@ where the sats go and how the payable address is resolved.
   `bitcoincash:qrhmpdplkmr2lwf8ekusaxzqntx7c9hp9utzcvkjcr` (SLIP-0044 coin type
   145), under Sam's control. `satsPerMb` is operator-configured (env) and served
   by `GET /ipfs/payment-address` (sections 3, 6, 7).
-- **Phase 2 (future).** Once the payment loop is verified end-to-end, the frozen
+- **Phase 2 (future).** Once the payment loop is verified end-to-end, the
   `psffpp-payments/docs/infra-changes.md` design applies: the `PSP1` registry,
   pool rotation, and the CashScript pool/share payout contracts that enable
   revenue divvying among operators (sections 4 and 7.2).
@@ -124,34 +122,24 @@ so that M2 (codec/announcer), M3 (pin-service BCH-only validation), M4 (clients
 and indexer comments), and M5 (deletion of the burn path) can be built against a
 fixed contract rather than inferred from code.
 
-### What changed from PS010 v1.0.0
+### Design notes
 
-- "can be paid through the use of SLP tokens" becomes "$0.01/MB targeted fee
-  paid in BCH to a pool contract" (Phase 2), or to a single operator-configured
-  payout address (Phase 1).
-- The "token price fluctuates relative to USD" paragraph is replaced by a BCH
-  sat amount fixed for the life of a claim: per registry epoch in Phase 2, per
-  deployment in Phase 1 (section 3).
-- Proof-of-burn is deleted as a payment mechanism. It is not retained as a
-  legacy annex, and no v1.0.0 claim is re-validated under v2.0.0 (section 8).
-- Dual-mode validation (`ACCEPT_LEGACY_PSF_POB`, `_getTokenQtyDiff`, PS009
-  write-price lookups) is removed. Validation is single-mode, BCH only
-  (section 7).
-- The "$0.01 minimum cost" rule is a locked 100 KB floor (section 3).
-- Unconfirmed claims are accepted with no special handling. Epoch resolution is by
-  claim height everywhere, and an unconfirmed claim is assigned the height
+- A pin is paid for with a targeted fee of **$0.01/MB in BCH**, fixed for the
+  life of the claim: per registry epoch in Phase 2, per deployment in Phase 1
+  (section 3).
+- Proof-of-burn is removed as a payment mechanism, not retained as a legacy
+  annex; validation is single-mode and BCH only — no dual-mode path exists
+  (sections 7, 8).
+- The "$0.01 minimum cost" rule is the 100 KB floor (section 3).
+- Unconfirmed claims are accepted with no special handling. Epoch resolution is
+  by claim height everywhere, and an unconfirmed claim is assigned the height
   `currentTipHeight + 1` (section 7.2).
-- Payment-txid reuse keeps existing `handleRenewal` / TXID-keyed semantics, and
-  the version string stays "PS010 v2.0.0".
-- Every decision above was locked by Chris on 2026-11-23; section 9 records them
-  as normative rather than as open questions.
-- `psffpp` npm burn API references are replaced by "send BCH, then build the
-  claim"; the indexer's role and webhook path are described as they exist today.
-- Deployment is two-phase (section 1). Phase 1 pays a single operator-configured
-  BCH payout address (default: the `pinning` wallet) with an
-  operator-configured `satsPerMb` and no registry, epochs or pool contracts; the
-  `PSP1` registry and CashScript pool/share payout (revenue divvy) are deferred
-  to Phase 2 (decision 9e).
+- Payment-txid reuse keeps the existing `handleRenewal` / TXID-keyed semantics,
+  and the version string is "PS010 v2.0.0".
+- Deployment is two-phase (section 1): Phase 1 pays a single operator-configured
+  BCH payout address with an operator-configured `satsPerMb` and no registry,
+  epochs or pool contracts; the `PSP1` registry and CashScript pool/share payout
+  (revenue divvy) are deferred to Phase 2 (decision 9e).
 
 ---
 
@@ -197,8 +185,8 @@ Registry council (long-term)
   are authorized by the council via a **PS009 Multisig Approval** process:
   n-of-m members approve each update, so **no single entity** can set prices or
   redirect the pool. The mechanism is [PS009 v2 — Multisig Rate Approval]
-  (ps009-multisig-approval-v2.md), which supersedes PS009 v1, drops PSF-token
-  assumptions, and carries the `satsPerMb` rate. **Phase-2 machinery
+  (ps009-multisig-approval-v2.md), which carries the `satsPerMb` rate and has
+  no PSF-token component. **Phase-2 machinery
   (long-term).**
 
 Registry epoch
@@ -270,9 +258,9 @@ no epoch in Phase 1.
 on-chain rate update**. New `satsPerMb` values are authorized by a **multisig
 council of this network's node-operators** via the
 [PS009 v2 — Multisig Rate Approval](ps009-multisig-approval-v2.md) mechanism,
-and distributed through the registry epochs of section 4. PS009 v2 supersedes
-PS009 v1, drops its PSF-token focus, and carries the `satsPerMb` rate. This
-follows PS009's multisig-approval pattern; it does
+and distributed through the registry epochs of section 4. PS009 v2 carries the
+`satsPerMb` rate and has no PSF-token component. This follows PS009's
+multisig-approval pattern; it does
 **not** revive the removed legacy PS009 token write-price lookup (section 8.2).
 The rate a claim is validated against remains fixed and recorded per epoch, and
 is never recomputed from USD or from a live oracle ("Consequences" below).
@@ -314,7 +302,7 @@ imported by both the announcer and the pin-service. Reimplementing it in a
 second place is a defect, because announcer and validator would be free to
 diverge. The second term is the 100 KB floor; see subsection 3.3.
 
-### 3.3 Minimum charge (100 KB, locked 2026-11-23)
+### 3.3 Minimum charge (100 KB floor)
 
 Every claim pays for at least 100 KB, whatever the actual file size:
 
@@ -337,8 +325,8 @@ re-derive one from `fileSizeBytes`.
 **Phase-2 mechanism.** This registry is the Phase-2 mechanism. Phase 1 deploys
 without it: a single operator-configured payout address answers every claim
 (sections 6 and 7), and no `PSP1` transaction is required to accept a payment.
-The announcement layout, chain rule and epoch interval below are retained
-verbatim. **The auth rule has two tiers** (section 4.2): an *interim*
+The announcement layout, chain rule and epoch interval below are normative.
+**The auth rule has two tiers** (section 4.2): an *interim*
 single-controller bootstrap and the *long-term* P2SH multisig council — the
 single-controller form exists only to get the registry running and is not the
 governance model.
@@ -347,7 +335,7 @@ Registry announcements are append-only, council-approved, chain-linked
 OP_RETURNs. Detection mirrors Pin Claim detection: match OP_RETURN + 4-byte
 lokad.
 
-### 4.1 Announcement layout (frozen — copied verbatim)
+### 4.1 Announcement layout
 
 Lokad ASCII **`PSP1`** (PSFFPP Pool registry v1). Match existing Pin Claim
 style: OP_RETURN + 4-byte push of lokad.
@@ -402,13 +390,13 @@ Normative detail for both variants: comparisons are on normalized cashaddr /
 P2SH locking payloads, never on the raw script of a later input, and never on
 any output.
 
-### 4.3 Chain rule (frozen)
+### 4.3 Chain rule
 
 `prevRegistryTxid` must equal the previous accepted announcement's txid (or 32
 zero bytes if DB empty / genesis). Reject if tip already has a different child
 (no forks).
 
-### 4.4 Epoch interval (frozen)
+### 4.4 Epoch interval
 
 For announcement `i` with height `H_i`, address `A_i` is valid for claims with
 `claimTx.height` in `[H_i, H_{i+1})`. Latest epoch: `[H_latest, +∞)`.
@@ -416,7 +404,7 @@ For announcement `i` with height `H_i`, address `A_i` is valid for claims with
 Epoch resolution is therefore a function of claim height only — never of wall
 clock time, and never of the current tip.
 
-### 4.5 Config-seed bootstrap (frozen, ops-only)
+### 4.5 Config-seed bootstrap (ops-only)
 
 If Mongo is empty, pin-service may insert one synthetic genesis epoch from env
 (`POOL_REGISTRY_SEED_*`) with `registryTxid = "seed"` and
@@ -429,7 +417,7 @@ A seed epoch is not a substitute for an announcement. It MUST NOT be used to
 validate historical claims once any on-chain epoch exists, and any pin validated
 against a seed epoch MUST be re-checkable when the chain catches up.
 
-### 4.6 Shared codec (frozen)
+### 4.6 Shared codec
 
 Location: `psffpp-payments/lib/pool-registry/` (or `src/pool-registry/`):
 
@@ -446,7 +434,7 @@ published workspace package) — do not reimplement decode in pin-service.
 
 ## 5. Pin Claim
 
-The Pin Claim wire format is unchanged from v1.0.0. Only the semantics of
+The Pin Claim wire format is fixed; only the semantics of
 field 2 change.
 
 ### 5.1 Layout
@@ -749,7 +737,7 @@ distinguishably (log/`details` string), not collapsed into one generic error:
 
 ---
 
-## 8. Clean cutover (locked 2026-11-23)
+## 8. Clean cutover
 
 ### 8.1 No legacy window
 
@@ -767,7 +755,7 @@ running two services.
 The burn payment path is deleted from the codebase (M5): `createPinClaim`'s burn
 branch, `_getTokenQtyDiff`, `getMcWritePrice`, the PS009 write-price history
 lookups, the hardcoded PSF price fallbacks, and the PSF liquidity price feed.
-None of these are frozen for v2.0.0 and none are retained behind a flag. PS009
+None of these are retained behind a flag. PS009
 write-price history is not a valid input to any v2.0.0 validation.
 
 ### 8.3 Cutover order
@@ -842,11 +830,9 @@ flowchart TD
 
 ---
 
-## 9. Decisions (locked 2026-11-23)
+## 9. Design decisions
 
-The clean-break question and all four open decision points were resolved by Chris
-on 2026-11-23, and the Phase-1/Phase-2 deployment split was confirmed the same
-day. They are normative: implement these, not options.
+The decisions below are normative: implement these, not options.
 
 **(ZERO) Clean break — no legacy support.** v2.0.0 accepts BCH payments only
 (single payout address in Phase 1, a pool contract in Phase 2). No legacy
@@ -889,8 +875,8 @@ served by `GET /ipfs/payment-address`; validation is
 if the address or `satsPerMb` is unset; there is no registry, no epoch, and no
 pool rotation. The CashScript pool/share contracts, the `PSP1` registry and pool
 rotation are deferred until the payment loop is verified end-to-end; after that
-the frozen `infra-changes.md` design applies as Phase 2, enabling revenue
-divvying among operators. **(f) No single-entity control of the registry (locked 2026-11-27).** The
+the `infra-changes.md` design applies as Phase 2, enabling revenue
+divvying among operators. **(f) No single-entity control of the registry.** The
 pool registry's governance must not rest on one address or one person. The
 single-controller `POOL_REGISTRY_CONTROLLER` is an **interim bootstrap only**:
 it may start the registry, and the long-term authority is a **P2SH multisig
@@ -908,7 +894,7 @@ No decision above is renumbered.
 
 ## Appendix A — Reference implementations and repos
 
-- `psffpp-payments` — CashScript pool/share contracts; frozen `PSP1` codec,
+- `psffpp-payments` — CashScript pool/share contracts; `PSP1` codec,
   `requiredSats`, `announce-registry` and `compute-sats-per-mb` CLIs. Phase-1
   deployment does not use these; they are the Phase-2 design.
 - `ipfs-file-pin-service` — Phase-1 single-payout-address validation;
