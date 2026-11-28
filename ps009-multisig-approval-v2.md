@@ -72,10 +72,8 @@ Token**:
   implemented in the v1 JavaScript library
   [psf-multisig-approval](https://www.npmjs.com/package/psf-multisig-approval)
   (which implements PS009 v1). That library is expected to be **forked and
-  adapted for v2** — it is the implementation home for this workflow.
-  `psf-bch-wallet` does **not** provide multisig construction and is not part
-  of this mechanism.
-- **N-of-m threshold:** chosen by the council and published in the registry
+  adapted for this v2 spec** — it is the implementation home for this workflow.
+- **N-of-M threshold:** chosen by the council and published in the registry
   policy (e.g. 3-of-5). Public keys are compressed and sorted
   lexicographically before address derivation, so that any party recomputes
   the same address.
