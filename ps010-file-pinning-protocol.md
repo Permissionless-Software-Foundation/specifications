@@ -291,7 +291,7 @@ Consequences, all normative:
 - The next epoch's rate absorbs price drift. Re-announcing more often is a
   policy tool, not a protocol change.
 
-### `computeSatsPerMb` (ops helper, not used at validation)
+### 3.1 `computeSatsPerMb` (ops helper, not used at validation)
 
     satsPerMb = ceil( usdPerMb / usdPerBch * 1e8 )
 
@@ -303,7 +303,7 @@ Example (illustrative, not a fixture): `usdPerBch = 500.00` →
 This lives in `psffpp-payments/scripts/compute-sats-per-mb.mjs` and is an
 operator convenience only. Implementations MUST NOT call it during validation.
 
-### `requiredSats`
+### 3.2 `requiredSats`
 
     requiredSats({ fileSizeBytes, satsPerMb }) =
         max( ceil( fileSizeBytes / 1e6 * satsPerMb ),
@@ -312,9 +312,9 @@ operator convenience only. Implementations MUST NOT call it during validation.
 Defined once, in the shared `psffpp-payments` pool-registry library, and
 imported by both the announcer and the pin-service. Reimplementing it in a
 second place is a defect, because announcer and validator would be free to
-diverge. The second term is the 100 KB floor; see the next subsection.
+diverge. The second term is the 100 KB floor; see subsection 3.3.
 
-### Minimum charge (100 KB, locked 2026-11-23)
+### 3.3 Minimum charge (100 KB, locked 2026-11-23)
 
 Every claim pays for at least 100 KB, whatever the actual file size:
 
