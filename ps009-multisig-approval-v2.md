@@ -17,10 +17,13 @@ This revision supersedes **PS009 v1 — Multisig Approval**:
   `3ec3699`):
   https://github.com/Permissionless-Software-Foundation/specifications/blob/3ec369935b2d11bd551ba542c104a84bb6641e23/ps009-multisig-approval.md
 
-v2 keeps the v1 workflow (an Update Transaction approved by a P2SH multisig
-Approval Transaction) but replaces the SLP/PSF-token membership model with a
-plain BCH council of node-operators, and re-focuses the approved datum on the
-File Pinning Protocol's `satsPerMb` rate.
+v2 keeps the v1 workflow — an Update Transaction approved by a P2SH multisig
+Approval Transaction, with council membership keyed to SLP NFTs — but
+re-scopes it: the council is this network's node-operators (not the PSF
+Minting Council), and the approved datum is the File Pinning Protocol's
+`satsPerMb` rate. There is **no PSF token anywhere in this revision**; the
+SLP NFT is used only as an operator-identity beacon and a carrier for
+per-operator performance data.
 
 ## Authors
 
@@ -36,28 +39,46 @@ approve the `satsPerMb` price and the pool payout address** for each registry
 epoch (PS010 section 4). No single operator, and no external minting body, can
 set the price or redirect the pool.
 
-v1 of this specification derived council membership from holders of SLP NFTs
-belonging to a PSF Group Token, and approved PSFFPP *write-price* data
-paid-for in PSF tokens. v2 removes both: membership is a multisignature wallet
-built directly from the node-operators' BCH public keys, and the approved
-object is the PS010 registry epoch datum (`satsPerMb` + pool address). There
-is **no PSF token and no SLP dependency anywhere in this revision.**
+v1 derived council membership from holders of SLP NFTs belonging to a PSF
+Group Token, and approved PSFFPP *write-price* data paid for in PSF tokens.
+v2 keeps the NFT-based membership mechanism — it is the proven, practical way
+for council members to be discovered and verified — but re-scopes it: the
+Group Token is issued by the **registry council of node-operators** (not the
+PSF Minting Council), with **one NFT per operator**, and the approved object
+is the PS010 registry epoch datum (`satsPerMb` + pool address). PSF tokens
+play no role: no PSF-token payments, no PSF-token governance, no PSF
+write-price feed.
 
 ## 2. Council membership
 
 The registry council is a set of node-operators of the PS010 network — the
 people running a full Cash Stack (BCH full node + indexer + pin-service).
-Each operator contributes one standard BCH public key. The council's
-multisignature wallet is built from those keys:
+Membership is proven **by holding an SLP NFT under the council's Group
+Token**:
 
+- **One NFT per operator.** The Group Token is issued by the council itself;
+  it is not a PSF token and is not linked to PSF governance.
+- **Identity beacon.** The NFT is the stable handle: anyone can look up, on
+  chain, the address and public key that currently hold the NFT. This is far
+  easier in practice than having each member hand over a public key, and it
+  means an operator's address and public key can change over time — the NFT
+  moves to a new address while remaining the same operator's beacon.
+- **Performance data.** The SLP token's mutable data carries each operator's
+  performance reports (as recorded by the network, e.g. pin-service
+  metering). This is how the network tracks each operator's reporting; it is
+  not an input to approval validation.
+- **Multisig construction.** The council's P2SH multisig address is built from
+  the current NFT-holder public keys, following the procedure already
+  implemented in the v1 JavaScript library
+  [psf-multisig-approval](https://www.npmjs.com/package/psf-multisig-approval)
+  (which implements PS009 v1). That library is expected to be **forked and
+  adapted for v2** — it is the implementation home for this workflow.
+  `psf-bch-wallet` does **not** provide multisig construction and is not part
+  of this mechanism.
 - **N-of-m threshold:** chosen by the council and published in the registry
-  policy (e.g. 3-of-5).
-- **Construction:** multi-signature P2SH (`OP_m ... OP_n OP_CHECKMULTISIG`),
-  e.g. via the multi-hd / `createMultisig` facility of
-  [psf-bch-wallet](https://www.npmjs.com/package/psf-bch-wallet). Public keys
-  are compressed and sorted lexicographically before address derivation, so any
-  party recomputes the same address.
-- **No SLP Group Token, no NFTs, no PSF tokens.**
+  policy (e.g. 3-of-5). Public keys are compressed and sorted
+  lexicographically before address derivation, so that any party recomputes
+  the same address.
 - **Not the PSF Minting Council:** this is a new council of node-operators,
   deliberately separate from the Minting Council and from any PSF-token
   governance.
@@ -73,8 +94,8 @@ The workflow is unchanged in shape from PS009 v1:
 
 1. An **Update Transaction** is broadcast from a normal P2PKH address. Its
    OP_RETURN carries an IPFS CID resolving to a JSON document containing the
-   approved datum (`satsPerMb`, pool address) plus the council material needed
-   to validate the approval.
+   council membership proof and the approved datum (`satsPerMb`, pool
+   address).
 2. An **Approval Transaction** is generated from the council's P2SH multisig
    wallet. Its OP_RETURN carries the word `APPROVAL` and the TXID of the
    Update Transaction.
@@ -89,12 +110,15 @@ The Update Transaction is a standard P2PKH transaction whose first output is
 an OP_RETURN containing an IPFS CID (utf-8). The CID resolves to a JSON
 document carrying the following properties:
 
-1. The council P2SH multisig address and the compressed public keys used to
-   derive it (the council's current member keys).
-2. The n-of-m threshold.
-3. The approved `satsPerMb` (uint64, satoshis per megabyte per year — PS010
-   section 3).
-4. The pool payout address `A_i` for the epoch (PS010 section 4).
+1. The token ID of the council's Group Token (the token used to generate the
+   operators' NFTs).
+2. The token IDs of each operator NFT, together with the address and public
+   key holding each NFT at the time of the transaction.
+3. The P2SH multisig address derived from those public keys, and the n-of-m
+   threshold.
+4. The approved `satsPerMb` (uint64, satoshis per megabyte per year — PS010
+   section 3) and the pool payout address `A_i` for the epoch (PS010 section
+   4).
 5. Optionally, the `PSP1` registry announcement TXID for the epoch it
    approves.
 
@@ -135,29 +159,37 @@ follows:
    Transaction's OP_RETURN, and the CID from the Update Transaction's
    OP_RETURN.
 3. Fetch and parse the JSON document for that CID from an IPFS gateway.
-4. Assert the JSON's `satsPerMb` and pool address `A_i` equal the registry
+4. Verify the Group Token ID is listed and matches the council's expected
+   Group Token.
+5. Verify that all operator NFTs are children of that Group Token.
+6. Verify that each address listed in the JSON is generated from the given
+   public key.
+7. Verify that each address holds the NFT listed. Since NFTs can move, it may
+   be necessary to verify the address *held* the NFT at the relevant point in
+   its transaction history — this is what makes the beacon robust to changed
+   addresses and rotated keys.
+8. Compute the P2SH multisig address from the public keys and the published
+   threshold, assert it equals the address that generated the Approval
+   Transaction, and assert the Approval Transaction's first input spends from
+   that multisig address (i.e. it was signed by the n-of-m council keys).
+9. Assert the JSON's `satsPerMb` and pool address `A_i` equal the registry
    epoch (or proposed epoch) being validated — PS010 section 4.2 / failure
    case F9.
-5. Assert the JSON's public keys are exactly the registry's published council
-   keys (or an authoritative council-key update), and recompute the P2SH
-   multisig address from them using the published threshold.
-6. Assert the recomputed multisig address equals the address that generated
-   the Approval Transaction, and that the Approval Transaction's first input
-   spends from that multisig address (i.e. it was actually signed by the n-of-m
-   council keys).
 
-No SLP token checks and no NFT checks are performed at any step. Validation is
-pure BCH: on-chain public keys → multisig address → approval spends from it.
+The operator performance reports carried in the SLP mutable data are read for
+network bookkeeping only; they are not inputs to approval validation.
 
 ## 7. Differences from PS009 v1
 
 | Aspect | v1 (1.0.2) | v2 (this revision) |
 |---|---|---|
-| Membership proof | holders of SLP NFTs of a PSF Group Token | node-operators' plain BCH public keys |
-| Token dependency | PSF token / SLP ecosystem | none |
+| Membership proof | holders of SLP NFTs of a PSF Group Token | holders of the council's SLP NFTs (node-operator Group Token) |
+| Group Token issuer | PSF | the registry council itself |
+| Token dependency | PSF token / PSF-token payments | SLP only (identity + performance data); no PSF token |
 | Approving authority | PSF Minting Council | new registry council of node-operators |
 | Approved datum | PSFFPP write-price | PS010 `satsPerMb` rate + pool address |
-| Validation inputs | group token ID + NFT holdings | recomputed multisig address only |
+| Validation inputs | group token ID + NFT holdings | group token ID + NFT holdings + approved-datum check |
+| Implementation | psf-multisig-approval JS library | fork of psf-multisig-approval, adapted for v2 |
 | Use case | PSFFPP consensus-sync of write price | PS010 file-pinning registry epochs (§4.2) |
 
 v1 remains valid for the systems already using it; this revision does not
@@ -169,6 +201,6 @@ workflow.
 ## 8. Status
 
 Draft — added alongside PS010 v2.0.0 (PR #11) for review and is **not yet
-normative**. The library implementation of v1
-([psf-multisig-approval](https://www.npmjs.com/package/psf-multisig-approval))
-is expected to be revised in lockstep if this draft is adopted.
+normative**. Implementation is expected to fork the v1 library
+[psf-multisig-approval](https://www.npmjs.com/package/psf-multisig-approval)
+in lockstep if this draft is adopted.
